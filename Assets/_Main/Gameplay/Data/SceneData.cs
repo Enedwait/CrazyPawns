@@ -1,5 +1,7 @@
+using System;
 using CrazyPawn;
 using Main.Gameplay.Checkerboards;
+using Main.Gameplay.Pawns;
 using UnityEngine;
 
 namespace Main.Gameplay.Data
@@ -8,7 +10,16 @@ namespace Main.Gameplay.Data
     {
         [field: SerializeField, Header("Scene Objects")] public Camera MainCamera { get; protected set; }
         [field: SerializeField] public Checkerboard Checkerboard { get; protected set; }
+        [field: SerializeField] public Transform PawnPoolRoot { get; protected set; }
         [field: SerializeField] public Transform PawnSpawnRoot { get; protected set; }
-        [field: SerializeField, Header("Data")] public CrazyPawnSettings CrazyPawnSettings { get; protected set; }
+        [field: SerializeField, Header("Data")] public PrefabHolderSO Prefabs { get; protected set; }
+        [field: SerializeField] public CrazyPawnSettings CrazyPawnSettings { get; protected set; }
+
+        public PawnSpawnerParameters GetPawnSpawnerParameters() => new PawnSpawnerParameters
+        {
+            pawnCount = CrazyPawnSettings.InitialPawnCount,
+            spawnRadius = CrazyPawnSettings.InitialZoneRadius,
+            seed = (uint)DateTime.UtcNow.Ticks,
+        };
     }
 }

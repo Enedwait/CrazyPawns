@@ -11,7 +11,7 @@ PrefabInstance:
     - target: {fileID: 4336407271673045507, guid: 2c0325599477842329501387d1984e5b,
         type: 3}
       propertyPath: m_Name
-      value: Pawn
+      value: PawnExtended
       objectReference: {fileID: 0}
     - target: {fileID: 7607398093294646273, guid: 2c0325599477842329501387d1984e5b,
         type: 3}
@@ -66,5 +66,27 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4336407271673045507, guid: 2c0325599477842329501387d1984e5b,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5881223633913811714}
   m_SourcePrefab: {fileID: 100100000, guid: 2c0325599477842329501387d1984e5b, type: 3}
+--- !u!1 &9158048950586162067 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4336407271673045507, guid: 2c0325599477842329501387d1984e5b,
+    type: 3}
+  m_PrefabInstance: {fileID: 4844166275736115600}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5881223633913811714
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9158048950586162067}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 297e97f27bc23244aa351374cc5bb10e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
