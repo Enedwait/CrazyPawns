@@ -8,5 +8,6 @@ namespace Main.Gameplay.Pawns
         public int pawnCount;
         public float spawnRadius;
         public uint seed;
+        public bool doSpawnPawns;
     }
 }

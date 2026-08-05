@@ -23,7 +23,8 @@ namespace Main.Gameplay.Pawns
             
             _random = new Random(_parameters.seed);
 
-            SpawnAll(_parameters);
+            if (_parameters.doSpawnPawns)
+                SpawnAll(_parameters);
         }
 
         private void SpawnAll(PawnSpawnerParameters parameters)

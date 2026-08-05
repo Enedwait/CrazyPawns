@@ -101,7 +101,7 @@ namespace Main.Infrastructure.Controls
                 {
                     ""name"": """",
                     ""id"": ""4f0af73d-d7f1-4ec9-8268-c75d756d2aa2"",
-                    ""path"": """",
+                    ""path"": ""<Mouse>/delta"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard & Mouse"",

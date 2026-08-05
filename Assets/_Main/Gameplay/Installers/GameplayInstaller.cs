@@ -21,6 +21,9 @@ namespace Main.Gameplay.Installers
         {
             Container.BindInstance(_sceneData)
                 .AsSingle();
+
+            Container.BindInstance(_sceneData.MainCamera)
+                .AsSingle();
         }
 
         private void InstallPlayer()

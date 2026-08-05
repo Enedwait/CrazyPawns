@@ -1,0 +1,41 @@
+using UnityEngine;
+using Random = Unity.Mathematics.Random;
+using Screen = UnityEngine.Device.Screen;
+
+namespace Main.Common.Extensions
+{
+    public static class Extensions
+    {
+        public static Random InitializeRandom(this object someObject)
+        {
+            uint seed = (uint)System.DateTime.UtcNow.Ticks;
+            if (seed == 0) seed = 1;
+            return new Random(seed);
+        }
+
+        public static RaycastHit GetClosestHit(this RaycastHit[] hits, int maxLen)
+        {
+            RaycastHit hit = default;
+            float minDistance = float.MaxValue;
+            for (int i = 0; i < maxLen; i++)
+            {
+                if (minDistance > hits[i].distance)
+                {
+                    hit = hits[i];
+                    minDistance = hit.distance;
+                }
+            }
+            return hit;
+        }
+
+        public static Vector3 GetPointAlongRayWithY(this Ray ray, float targetY)
+        {
+            if (Mathf.Approximately(ray.direction.y, 0f))
+                return Vector3.zero;
+
+            return ray.GetPoint((targetY - ray.origin.y) / ray.direction.y);
+        }
+    }
+}
+
+

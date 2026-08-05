@@ -1,10 +1,16 @@
+using Main.Common.Extensions;
 using UnityEngine;
 
-namespace Main.Common
+namespace Main.Common.Behaviours
 {
     public abstract class AbstractMonoBehaviourExtended : MonoBehaviour
     {
         #region Unity Methods
+
+#if UNITY_EDITOR
+        protected virtual void OnValidate()
+        { }
+#endif
 
         protected virtual void Start()
         {
