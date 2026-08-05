@@ -19,6 +19,8 @@ namespace Main.Gameplay.Managers
         private Camera Camera => _cameraProvider.GetCamera();
 
         public bool IsActive { get; private set; }
+        public bool IsPanAllowed { get; private set; }
+        public bool IsZoomAllowed { get; private set; }
 
         [Inject]
         private void Construct(ICameraProvider cameraProvider)
@@ -36,9 +38,24 @@ namespace Main.Gameplay.Managers
             IsActive = active;
         }
 
+        public void SetPanAllowed(bool allowed)
+        {
+            IsPanAllowed = allowed;
+            if (!IsPanAllowed)
+                _target?.SetPan(Vector2.zero);
+        }
+
+        public void SetZoomAllowed(bool allowed)
+        {
+            IsZoomAllowed = allowed;
+            if (!IsZoomAllowed)
+                _target?.SetZoom(Vector3.zero, 0f);
+        }
+
         private void OnPanDelta(Vector2 panDelta)
         {
             if (!IsActive) return;
+            if (!IsPanAllowed) return;
             if (_target == null) return;
 
             _target.SetPan(panDelta);
@@ -55,7 +72,7 @@ namespace Main.Gameplay.Managers
             _target.SetZoom(cameraRay.direction, zoom);
         }
 
-        protected override void Subscribe(bool subscribe)
+        protected override void SubscribeInner(bool subscribe)
         {
             if (subscribe)
             {

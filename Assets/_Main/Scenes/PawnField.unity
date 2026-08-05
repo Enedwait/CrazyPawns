@@ -288,9 +288,9 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 5
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!23 &162984739
@@ -393,6 +393,7 @@ MonoBehaviour:
     type: 2}
   <CrazyPawnSettings>k__BackingField: {fileID: 11400000, guid: c3b00c709b1f94f22a212add39c80449,
     type: 2}
+  <CellSize>k__BackingField: 1.5
   <DoSpawnPawns>k__BackingField: 0
 --- !u!4 &226194630
 Transform:
@@ -823,6 +824,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 412645612}
+  - {fileID: 1999715675}
   m_Father: {fileID: 1001250430}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1220350337
@@ -1121,6 +1123,80 @@ MonoBehaviour:
   m_FirstSelected: {fileID: 0}
   m_sendNavigationEvents: 1
   m_DragThreshold: 10
+--- !u!1001 &1999715674
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1219531501}
+    m_Modifications:
+    - target: {fileID: 3074559749369507217, guid: e6d386ddfbd55e6419868758861c5f8c,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -2.26
+      objectReference: {fileID: 0}
+    - target: {fileID: 3074559749369507217, guid: e6d386ddfbd55e6419868758861c5f8c,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3074559749369507217, guid: e6d386ddfbd55e6419868758861c5f8c,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -4.82
+      objectReference: {fileID: 0}
+    - target: {fileID: 3074559749369507217, guid: e6d386ddfbd55e6419868758861c5f8c,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3074559749369507217, guid: e6d386ddfbd55e6419868758861c5f8c,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3074559749369507217, guid: e6d386ddfbd55e6419868758861c5f8c,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3074559749369507217, guid: e6d386ddfbd55e6419868758861c5f8c,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3074559749369507217, guid: e6d386ddfbd55e6419868758861c5f8c,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3074559749369507217, guid: e6d386ddfbd55e6419868758861c5f8c,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3074559749369507217, guid: e6d386ddfbd55e6419868758861c5f8c,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9158048950586162067, guid: e6d386ddfbd55e6419868758861c5f8c,
+        type: 3}
+      propertyPath: m_Name
+      value: PawnExtended (1)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: e6d386ddfbd55e6419868758861c5f8c, type: 3}
+--- !u!4 &1999715675 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3074559749369507217, guid: e6d386ddfbd55e6419868758861c5f8c,
+    type: 3}
+  m_PrefabInstance: {fileID: 1999715674}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

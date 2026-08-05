@@ -35,6 +35,9 @@ namespace Main.Common.Extensions
 
             return ray.GetPoint((targetY - ray.origin.y) / ray.direction.y);
         }
+
+        public static bool IsInside(this Collider collider, Vector3 point) =>
+            collider.ClosestPoint(point) == point;
     }
 }
 

@@ -10,7 +10,6 @@ namespace Main.Gameplay.Managers
     [DisallowMultipleComponent]
     public sealed class DragManager : AbstractMonoBehaviourExtended
     {
-        //[SerializeField] private SelectionManager _selectionManager;
         [SerializeField] private ClickProvider _clickProvider;
         [SerializeField] private Vector2DeltaProvider _cursorDeltaProvider;
         [SerializeField] private CursorPositionProvider _cursorPositionProvider;
@@ -36,21 +35,35 @@ namespace Main.Gameplay.Managers
             IsActive = active;
         }
 
-        public void BeginDrag(AbstractDraggable draggable)
+        public bool BeginDrag(AbstractDraggable draggable)
         {
             if (draggable == null)
-                return;
+                return false;
+
+            if (!draggable.BeginDrag())
+                return false;
 
             IsDragging = true;
             Current = draggable;
 
-            RaiseOnDragStarted();
+            RaiseOnDragStarted(draggable);
+            return true;
         }
 
-        public void EndDrag()
+        public bool EndDrag()
         {
+            var draggable = Current;
+            if (draggable == null)
+                return true;
+
+            if (!draggable.EndDrag())
+                return false;
+
             IsDragging = false;
-            RaiseOnDragCompleted();
+            Current = null;
+
+            RaiseOnDragCompleted(draggable);
+            return true;
         }
 
         private void OnSelected(AbstractSelectable selected)
@@ -68,36 +81,16 @@ namespace Main.Gameplay.Managers
 
         private void OnClickCanceled()
         {
-            IsDragging = false;
-            RaiseOnDragCompleted();
+            EndDrag();
         }
 
-        private void RaiseOnDragStarted() => onDragStarted?.Invoke(Current);
-        private void RaiseOnDragCompleted() => onDragCompleted?.Invoke(Current);
+        private void RaiseOnDragStarted(AbstractDraggable draggable) => onDragStarted?.Invoke(draggable);
+        private void RaiseOnDragCompleted(AbstractDraggable draggable) => onDragCompleted?.Invoke(draggable);
 
-        protected override void Subscribe(bool subscribe)
+        protected override void SubscribeInner(bool subscribe)
         {
-            SubscribeToSelectionManager(subscribe);
             SubscribeToClick(subscribe);
             SubscribeToCursorDelta(subscribe);
-        }
-
-        private void SubscribeToSelectionManager(bool subscribe)
-        {
-            /*
-            if (_selectionManager == null)
-                return;
-
-            if (subscribe)
-            {
-                _selectionManager.onSelected += OnSelected;
-                _selectionManager.onReleased += OnReleased;
-            }
-            else
-            {
-                _selectionManager.onSelected -= OnSelected;
-                _selectionManager.onReleased -= OnReleased;
-            }*/
         }
 
         private void SubscribeToClick(bool subscribe)

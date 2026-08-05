@@ -13,5 +13,8 @@ namespace Main.Gameplay.Pawns
         {
             return true;
         }
+
+        protected override void SubscribeInner(bool subscribe)
+        { }
     }
 }

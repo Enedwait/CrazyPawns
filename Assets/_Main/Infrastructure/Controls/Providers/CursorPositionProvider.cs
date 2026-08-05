@@ -57,7 +57,7 @@ namespace Main.Infrastructure.Controls.Providers
 
         #region Subscribe
 
-        protected override void Subscribe(bool subscribe)
+        protected override void SubscribeInner(bool subscribe)
         {
             if (positionAction == null)
                 return;

@@ -1,10 +1,9 @@
 using UnityEngine;
 using UnityEngine.Events;
-using System.Runtime.CompilerServices;
 
 namespace Main.Common.Behaviours
 {
-    public abstract class AbstractSelectable : MonoBehaviour
+    public abstract class AbstractSelectable : AbstractMonoBehaviourExtended
     {
         [SerializeField] protected Transform target;
         
@@ -14,19 +13,33 @@ namespace Main.Common.Behaviours
 
         public event UnityAction<SelectedChangedEventArgs> onSelectedChanged;
 
+        protected override void InitComponents()
+        {
+            base.InitComponents();
+
+            if (target == null)
+                target = transform;
+        }
+
+        protected override void Start()
+        {
+            base.Start();
+
+            CanSelect = true;
+        }
+
         public bool Select()
         {
-            if (!CanSelect && IsSelected)
+            if (!CanSelect || IsSelected)
                 return false;
 
-            if (SelectInner())
-            {
-                IsSelected = true;
-                RaiseOnSelectedChanged();
-                return true;
-            }
+            if (!SelectInner()) 
+                return false;
 
-            return false;
+            IsSelected = true;
+            RaiseOnSelectedChanged();
+
+            return true;
         }
 
         protected abstract bool SelectInner();
@@ -36,14 +49,13 @@ namespace Main.Common.Behaviours
             if (!IsSelected)
                 return true;
 
-            if (DeselectInner())
-            {
-                IsSelected = false;
-                RaiseOnSelectedChanged();
-                return true;
-            }
+            if (!DeselectInner()) 
+                return false;
 
-            return false;
+            IsSelected = false;
+            RaiseOnSelectedChanged();
+
+            return true;
         }
 
         protected abstract bool DeselectInner();

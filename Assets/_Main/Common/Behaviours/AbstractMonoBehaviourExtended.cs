@@ -1,16 +1,27 @@
-using Main.Common.Extensions;
 using UnityEngine;
 
 namespace Main.Common.Behaviours
 {
     public abstract class AbstractMonoBehaviourExtended : MonoBehaviour
     {
+        #region Fields
+
+        protected bool isSubscribed;
+
+        #endregion
+
         #region Unity Methods
 
 #if UNITY_EDITOR
         protected virtual void OnValidate()
-        { }
+        {
+            InitComponentsOnValidate();
+        }
 #endif
+        protected virtual void Awake()
+        {
+            InitComponents();
+        }
 
         protected virtual void Start()
         {
@@ -24,9 +35,28 @@ namespace Main.Common.Behaviours
 
         #endregion
 
+        #region Init
+
+        protected virtual void InitComponents()
+        { }
+
+        protected virtual void InitComponentsOnValidate()
+        { }
+
+        #endregion
+
         #region Subscribe
 
-        protected abstract void Subscribe(bool subscribe);
+        protected void Subscribe(bool subscribe)
+        {
+            if (isSubscribed && subscribe)
+                SubscribeInner(false);
+
+            SubscribeInner(subscribe);
+            isSubscribed = subscribe;
+        }
+
+        protected abstract void SubscribeInner(bool subscribe);
 
         #endregion
     }

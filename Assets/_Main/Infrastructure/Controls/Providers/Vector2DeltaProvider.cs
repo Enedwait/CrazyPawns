@@ -40,7 +40,7 @@ namespace Main.Infrastructure.Controls.Providers
         public override void ResetValues() =>
             Delta = Vector2.zero;
 
-        protected override void Subscribe(bool subscribe)
+        protected override void SubscribeInner(bool subscribe)
         {
             if (_deltaAction == null)
                 return;

@@ -1,4 +1,3 @@
-using Main.Gameplay.Checkerboards;
 using Main.Gameplay.Data;
 using UnityEngine;
 using Zenject;
@@ -15,15 +14,9 @@ namespace Main.Gameplay.Controllers
             this._sceneData = sceneData;
         }
 
-        protected void Start()
+        protected async void Start()
         {
-            _sceneData.Checkerboard.Initialize(new CheckerboardInitParameters
-            {
-                boardSize = _sceneData.CrazyPawnSettings.CheckerboardSize,
-                cellSize = 1.5f,
-                WhiteCellColor = _sceneData.CrazyPawnSettings.WhiteCellColor,
-                BlackCellColor = _sceneData.CrazyPawnSettings.BlackCellColor,
-            });
+            await _sceneData.Checkerboard.InitializeAsync(_sceneData.GetCheckerboardInitParameters());
         }
     }
 }

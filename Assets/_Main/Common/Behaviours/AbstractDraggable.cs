@@ -1,25 +1,47 @@
+using Main.Gameplay.Data;
 using UnityEngine;
+using Zenject;
 
 namespace Main.Common.Behaviours
 {
-    public abstract class AbstractDraggable : MonoBehaviour
+    public abstract class AbstractDraggable : AbstractMonoBehaviourExtended
     {
         [SerializeField] protected Transform target;
+
+        protected SceneData sceneData;
 
         public Transform Target => target;
         public bool IsDragging { get; protected set; }
         public bool CanDrag { get; protected set; }
 
-        public void BeginDrag()
+        [Inject]
+        private void Construct(SceneData sceneData)
         {
-            if (!CanDrag && IsDragging)
-                return;
-
-            BeginDragInner();
-            IsDragging = true;
+            this.sceneData = sceneData;
         }
 
-        protected abstract void BeginDragInner();
+        protected override void Start()
+        {
+            base.Start();
+
+            CanDrag = true;
+        }
+
+        public bool BeginDrag()
+        {
+            if (!CanDrag && IsDragging)
+                return false;
+
+            if (BeginDragInner())
+            {
+                IsDragging = true;
+                return true;
+            }
+
+            return false;
+        }
+
+        protected abstract bool BeginDragInner();
 
         public void Drag(Vector3 direction)
         {
@@ -31,15 +53,18 @@ namespace Main.Common.Behaviours
 
         protected abstract void DragInner(Vector3 direction);
 
-        public void EndDrag()
+        public bool EndDrag()
         {
             if (!IsDragging)
-                return;
+                return true;
 
-            EndDragInner();
+            if (!EndDragInner())
+                return false;
+            
             IsDragging = false;
+            return true;
         }
 
-        protected abstract void EndDragInner();
+        protected abstract bool EndDragInner();
     }
 }

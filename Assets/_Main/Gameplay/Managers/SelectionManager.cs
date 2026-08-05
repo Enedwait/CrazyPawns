@@ -24,8 +24,8 @@ namespace Main.Gameplay.Managers
         public bool IsActive { get; private set; }
         public AbstractSelectable Current { get; private set; }
 
-        public event UnityAction<AbstractSelectable> onSelected;
-        public event UnityAction<AbstractSelectable> onReleased;
+        public event UnityAction<SelectedEventArgs> onSelected;
+        public event UnityAction<SelectedEventArgs> onReleased;
 
         #region Inject
 
@@ -124,33 +124,18 @@ namespace Main.Gameplay.Managers
 
         #endregion
 
-        private void OnClick()
-        {
-            if (!IsActive) 
-                return;
+        #region Event Raisers
 
-            Vector2 screenPosition = _cursorPositionProvider.CursorPosition;
-            Ray cameraRay = Camera.ScreenPointToRay(screenPosition);
+        private void RaiseOnSelected(AbstractSelectable selectable) => 
+            onSelected?.Invoke(new SelectedEventArgs(this, selectable));
+        private void RaiseOnReleased(AbstractSelectable selectable) => 
+            onReleased?.Invoke(new SelectedEventArgs(this, selectable));
 
-            int hitsCount = Physics.RaycastNonAlloc(cameraRay, _hits, _maxDistance, _layersToCheck);
-            if (hitsCount > 0)
-            {
-                RaycastHit closestHit = _hits.GetClosestHit(hitsCount);
-
-                AbstractSelectable selectable = closestHit.collider.GetComponent<AbstractSelectable>();
-                Select(selectable);
-            }
-        }
-
-        private void OnClickCanceled()
-        { }
-
-        private void RaiseOnSelected(AbstractSelectable selectable) => onSelected?.Invoke(selectable);
-        private void RaiseOnReleased(AbstractSelectable selectable) => onReleased?.Invoke(selectable);
+        #endregion
 
         #region Subscribe
 
-        protected override void Subscribe(bool subscribe)
+        protected override void SubscribeInner(bool subscribe)
         {
             if (_clickProvider == null)
                 return;
@@ -167,8 +152,34 @@ namespace Main.Gameplay.Managers
             }
         }
 
-        #endregion
+        private void OnClick()
+        {
+            if (!IsActive)
+                return;
 
-        
+            Vector2 screenPosition = _cursorPositionProvider.CursorPosition;
+            Ray cameraRay = Camera.ScreenPointToRay(screenPosition);
+
+            int hitsCount = Physics.RaycastNonAlloc(cameraRay, _hits, _maxDistance, _layersToCheck);
+            if (hitsCount > 0)
+            {
+                RaycastHit closestHit = _hits.GetClosestHit(hitsCount);
+
+                AbstractSelectable selectable = closestHit.collider.GetComponent<AbstractSelectable>();
+                if (Select(selectable))
+                {
+                    return;
+                }
+            }
+
+            Deselect(Current);
+        }
+
+        private void OnClickCanceled()
+        { }
+
+        #endregion
     }
+
+    public record SelectedEventArgs(SelectionManager manager, AbstractSelectable selectable);
 }

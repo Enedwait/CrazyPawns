@@ -14,8 +14,10 @@ namespace Main.Infrastructure.Controls.Providers
         public event UnityAction onClickPerformed;
         public event UnityAction onClickCanceled;
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+
             clickAction = _clickActionReference.action;
 
             ResetValues();
@@ -37,7 +39,7 @@ namespace Main.Infrastructure.Controls.Providers
         public override void ResetValues()
         { }
 
-        protected override void Subscribe(bool subscribe)
+        protected override void SubscribeInner(bool subscribe)
         {
             if (clickAction == null)
                 return;

@@ -41,7 +41,11 @@ namespace Main.Gameplay.Players
             _playerInput.camera = _cameraProvider.GetCamera();
 
             _selectionManager.SetActive(true);
+
             _panAndZoomManager.SetActive(true);
+            _panAndZoomManager.SetPanAllowed(true);
+            _panAndZoomManager.SetPanAllowed(true);
+
             _dragManager.SetActive(true);
 
             _panAndZoomManager.SetTarget(_sceneData.MainPanAndZoomTarget);
@@ -51,7 +55,7 @@ namespace Main.Gameplay.Players
 
         #region Subscribe
 
-        protected override void Subscribe(bool subscribe)
+        protected override void SubscribeInner(bool subscribe)
         {
             SubscribeToSelectionManager(subscribe);
             SubscribeToDragManager(subscribe);
@@ -78,25 +82,22 @@ namespace Main.Gameplay.Players
             }
         }
 
-        private void OnSelected(AbstractSelectable selected)
+        private void OnSelected(SelectedEventArgs args)
         {
-            //Debug.Log($"Selected: {selected}");
+            var selected = args.selectable;
 
             _dragManager.EndDrag();
 
             AbstractDraggable draggable = selected.GetComponent<AbstractDraggable>();
             if (draggable != null)
             {
-                //Debug.Log($"Begin Drag: {draggable}");
                 _dragManager.BeginDrag(draggable);
             }
         }
 
-        private void OnReleased(AbstractSelectable selected)
+        private void OnReleased(SelectedEventArgs args)
         {
-            //Debug.Log($"Released: {selected}");
-
-            //Debug.Log($"End Drag: {_dragManager.Current}");
+            var selected = args.selectable;
             _dragManager.EndDrag();
         }
 
@@ -124,13 +125,15 @@ namespace Main.Gameplay.Players
         private void OnDragStarted(AbstractDraggable draggable)
         {
             ActionState = PlayerActionState.Dragging;
-            _panAndZoomManager.SetActive(false);
+            //_panAndZoomManager.SetActive(false);
+            _panAndZoomManager.SetPanAllowed(false);
         }
 
         private void OnDragCompleted(AbstractDraggable draggable)
         {
             ActionState = PlayerActionState.None;
-            _panAndZoomManager.SetActive(true);
+            _panAndZoomManager.SetPanAllowed(true);
+            //_panAndZoomManager.SetActive(true);
         }
 
         #endregion

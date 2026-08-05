@@ -16,6 +16,7 @@ namespace Main.Gameplay.Data
         [field: SerializeField] public Transform PawnSpawnRoot { get; protected set; }
         [field: SerializeField, Header("Data")] public PrefabHolderSO Prefabs { get; protected set; }
         [field: SerializeField] public CrazyPawnSettings CrazyPawnSettings { get; protected set; }
+        [field: SerializeField] public float CellSize { get; protected set; } = 1.5f;
 
         [field: SerializeField, Header("Parameters")] public bool DoSpawnPawns { get; protected set; }
 
@@ -25,6 +26,14 @@ namespace Main.Gameplay.Data
             spawnRadius = CrazyPawnSettings.InitialZoneRadius,
             seed = (uint)DateTime.UtcNow.Ticks,
             doSpawnPawns = DoSpawnPawns,
+        };
+
+        public CheckerboardInitParameters GetCheckerboardInitParameters() => new CheckerboardInitParameters
+        {
+            boardSize = CrazyPawnSettings.CheckerboardSize,
+            cellSize = CellSize,
+            WhiteCellColor = CrazyPawnSettings.WhiteCellColor,
+            BlackCellColor = CrazyPawnSettings.BlackCellColor,
         };
     }
 }
