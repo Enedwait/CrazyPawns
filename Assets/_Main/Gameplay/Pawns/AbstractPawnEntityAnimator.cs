@@ -49,6 +49,7 @@ namespace Main.Gameplay.Pawns.Animations
                 case PawnAnimatorState.Active: Play(state); break;
                 case PawnAnimatorState.Delete: if (state == PawnAnimatorState.Restore) PlayIdle(); break;
                 case PawnAnimatorState.Restore: Play(state); break;
+                case PawnAnimatorState.ReadyToConnect: Play(state); break;
                 default: throw new NotImplementedException();
             }
         }
@@ -61,11 +62,18 @@ namespace Main.Gameplay.Pawns.Animations
                 case PawnAnimatorState.Active: PlayActive(); break;
                 case PawnAnimatorState.Delete: PlayDelete(); break;
                 case PawnAnimatorState.Restore: PlayRestore(); break;
+                case PawnAnimatorState.ReadyToConnect: PlayReadyToConnect(); break;
                 default: throw new NotImplementedException();
             }
         }
 
         protected override void PlayActive()
+        {
+            State = PawnAnimatorState.Active;
+            renderer.material = ActiveMaterial;
+        }
+
+        protected void PlayReadyToConnect()
         {
             State = PawnAnimatorState.Active;
             renderer.material = ActiveMaterial;
@@ -121,6 +129,7 @@ namespace Main.Gameplay.Pawns.Animations
             ToState(PawnAnimatorState.Restore);
         }
 
+
         private void OnExitCheckerboard(PawnExitCheckerboardEventArgs args)
         {
             ToState(PawnAnimatorState.Delete);
@@ -128,6 +137,6 @@ namespace Main.Gameplay.Pawns.Animations
 
         #endregion
 
-        public enum PawnAnimatorState { Idle, Active, Delete, Restore }
+        public enum PawnAnimatorState { Idle, Active, Delete, Restore, ReadyToConnect }
     }
 }

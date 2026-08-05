@@ -1,9 +1,10 @@
+using Main.Common.Classes;
+using System;
 using UnityEngine;
-using Zenject;
 
 namespace Main.Gameplay.Connections
 {
-    public class ConnectionPool : MonoMemoryPool<Connection>
+    public class ConnectionPool : TrackedMonoPool<Connection, ConnectionPoolSettings>
     {
         protected override void OnCreated(Connection item)
         {
@@ -29,5 +30,12 @@ namespace Main.Gameplay.Connections
             item.ResetValues();
             item.transform.position = Vector3.zero;
         }
+    }
+
+    [Serializable]
+    public class ConnectionPoolSettings : AbstractPoolSettings
+    {
+        public ConnectionPoolSettings(int initialCapacity) : base(initialCapacity)
+        { }
     }
 }

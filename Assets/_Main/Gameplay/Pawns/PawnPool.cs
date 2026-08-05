@@ -1,8 +1,9 @@
-using Zenject;
+using Main.Common.Classes;
+using System;
 
 namespace Main.Gameplay.Pawns
 {
-    public class PawnPool : MonoMemoryPool<PawnSpawnParameters, Pawn>
+    public class PawnPool : TrackedMonoPool<PawnSpawnParameters, Pawn, PawnPoolSettings>
     {
         protected override void OnCreated(Pawn item)
         {
@@ -28,5 +29,12 @@ namespace Main.Gameplay.Pawns
             item.ResetValues();
             item.transform.position = p1.Position;
         }
+    }
+
+    [Serializable]
+    public class PawnPoolSettings : AbstractPoolSettings
+    {
+        public PawnPoolSettings(int initialCapacity) : base(initialCapacity)
+        { }
     }
 }

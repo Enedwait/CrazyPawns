@@ -1,8 +1,8 @@
 using Main.Gameplay.Data;
 using Main.Gameplay.Pawns;
 using Main.Gameplay.Players;
-using System.Security.Cryptography;
 using Main.Gameplay.Connections;
+using Main.Gameplay.Managers;
 using UnityEngine;
 using Zenject;
 
@@ -43,10 +43,13 @@ namespace Main.Gameplay.Installers
         {
             PawnSpawnerParameters parameters = _sceneData.GetPawnSpawnerParameters();
 
+            Container.Bind<PawnPoolSettings>()
+                .FromInstance(new PawnPoolSettings(parameters.pawnCount))
+                .AsSingle();
+
             Container.BindMemoryPool<Pawn, PawnPool>()
                 .WithInitialSize(parameters.pawnCount)
                 .FromComponentInNewPrefab(_sceneData.Prefabs.Pawn)
-                //.UnderTransform(_sceneData.PawnPoolRoot);
                 .UnderTransformGroup("PawnPool");
 
             Container.BindInterfacesAndSelfTo<PawnSpawner>()
@@ -57,12 +60,20 @@ namespace Main.Gameplay.Installers
 
         private void InstallConnections()
         {
+            Container.Bind<ConnectionPoolSettings>()
+                .FromInstance(new ConnectionPoolSettings(_sceneData.InitialConnectionCount))
+                .AsSingle();
+
             Container.BindMemoryPool<Connection, ConnectionPool>()
                 .WithInitialSize(_sceneData.InitialConnectionCount)
                 .FromComponentInNewPrefab(_sceneData.Prefabs.Connection)
                 .UnderTransformGroup("ConnectionPool");
 
             Container.BindInterfacesAndSelfTo<ConnectionSpawner>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.BindInterfacesAndSelfTo<ConnectionUpdateManager>()
                 .AsSingle()
                 .NonLazy();
         }

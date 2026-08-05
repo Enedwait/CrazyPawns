@@ -84,6 +84,28 @@ namespace Main.Gameplay.Connections
             return true;
         }
 
+        private void UpdateA()
+        {
+            if (SocketA == null)
+                return;
+
+            _lineRenderer.SetPosition(0, SocketA.transform.position);
+        }
+
+        private void UpdateB()
+        {
+            if (SocketB == null)
+                return;
+
+            _lineRenderer.SetPosition(1, SocketB.transform.position);
+        }
+
+        public virtual void UpdatePoints()
+        {
+            UpdateA();
+            UpdateB();
+        }
+
         #endregion
 
         #region Spawn

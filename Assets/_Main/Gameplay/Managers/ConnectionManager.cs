@@ -70,7 +70,7 @@ namespace Main.Gameplay.Managers
 
         public void EndConnect()
         {
-            if (!IsActive)
+            if (!IsActive || Current == null)
             {
                 FinalizeEndConnect();
                 return;
@@ -92,6 +92,7 @@ namespace Main.Gameplay.Managers
                     if (Current.Connect(SocketA, SocketB))
                     {
                         RaiseOnConnectionEstablished(new ConnectionEventArgs(this, Current));
+                        Current = null;
                         return;
                     }
                 }
@@ -107,6 +108,7 @@ namespace Main.Gameplay.Managers
             {
                 Current.Remove();
                 RaiseOnConnectionEnded(new ConnectionEventArgs(this, Current));
+                Current = null;
             }
         }
 
