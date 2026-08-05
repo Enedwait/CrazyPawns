@@ -1,9 +1,18 @@
 using Main.Common.Behaviours;
+using Zenject;
 
 namespace Main.Gameplay.Pawns
 {
-    public class PawnSelectable : AbstractSelectable
+    public sealed class PawnSelectable : AbstractSelectable
     {
+        public PawnDraggable PawnDraggable { get; private set; }
+
+        [Inject]
+        private void Construct(PawnDraggable pawnDraggable)
+        {
+            PawnDraggable = pawnDraggable;
+        }
+
         protected override bool SelectInner()
         {
             return true;

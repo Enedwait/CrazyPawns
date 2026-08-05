@@ -41,6 +41,7 @@ namespace Main.Gameplay.Pawns
             };
 
             Pawn pawn = _pool.Spawn(pawnSpawnParameters);
+            pawn.OnSpawned(_pool);
         }
 
         private Vector3 GetRandomPosition(float radius) =>

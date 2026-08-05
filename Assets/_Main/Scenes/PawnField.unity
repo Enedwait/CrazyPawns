@@ -395,6 +395,7 @@ MonoBehaviour:
     type: 2}
   <CellSize>k__BackingField: 1.5
   <DoSpawnPawns>k__BackingField: 0
+  <InitialConnectionCount>k__BackingField: 64
 --- !u!4 &226194630
 Transform:
   m_ObjectHideFlags: 0

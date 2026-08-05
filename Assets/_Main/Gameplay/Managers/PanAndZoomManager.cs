@@ -1,5 +1,5 @@
-using Main.Common.Behaviours;
 using Main.Gameplay.Cameras;
+using Main.Gameplay.Players;
 using Main.Infrastructure.Controls.Providers;
 using UnityEngine;
 using Zenject;
@@ -7,25 +7,27 @@ using Zenject;
 namespace Main.Gameplay.Managers
 {
     [DisallowMultipleComponent]
-    public sealed class PanAndZoomManager : AbstractMonoBehaviourExtended
+    public sealed class PanAndZoomManager : AbstractManager
     {
-        [SerializeField] private CursorPositionProvider _cursorPositionProvider;
-        [SerializeField] private FloatDeltaProvider _zoomProvider;
-        [SerializeField] private Vector2DeltaProvider _panProvider;
-
+        private CursorPositionProvider _cursorPositionProvider;
+        private FloatDeltaProvider _zoomProvider;
+        private Vector2DeltaProvider _panProvider;
         private ICameraProvider _cameraProvider;
         private PanAndZoomTarget _target;
 
         private Camera Camera => _cameraProvider.GetCamera();
-
-        public bool IsActive { get; private set; }
         public bool IsPanAllowed { get; private set; }
         public bool IsZoomAllowed { get; private set; }
 
         [Inject]
-        private void Construct(ICameraProvider cameraProvider)
+        private void Construct(
+            ICameraProvider cameraProvider,
+            PlayerInputHandler inputHandler)
         {
             this._cameraProvider = cameraProvider;
+            this._cursorPositionProvider = inputHandler.CursorPositionProvider;
+            this._panProvider = inputHandler.PanProvider;
+            this._zoomProvider = inputHandler.ZoomProvider;
         }
 
         public void SetTarget(PanAndZoomTarget target)
@@ -33,32 +35,31 @@ namespace Main.Gameplay.Managers
             this._target = target;
         }
 
-        public void SetActive(bool active)
+        #region Subscribe
+
+        protected override void SubscribeInner(bool subscribe)
         {
-            IsActive = active;
+            SubscribeToZoom(subscribe);
+            SubscribeToPan(subscribe);
         }
 
-        public void SetPanAllowed(bool allowed)
-        {
-            IsPanAllowed = allowed;
-            if (!IsPanAllowed)
-                _target?.SetPan(Vector2.zero);
-        }
+        #endregion
 
-        public void SetZoomAllowed(bool allowed)
-        {
-            IsZoomAllowed = allowed;
-            if (!IsZoomAllowed)
-                _target?.SetZoom(Vector3.zero, 0f);
-        }
+        #region SubscribeToZoom
 
-        private void OnPanDelta(Vector2 panDelta)
+        private void SubscribeToZoom(bool subscribe)
         {
-            if (!IsActive) return;
-            if (!IsPanAllowed) return;
-            if (_target == null) return;
+            if (_zoomProvider == null)
+                return;
 
-            _target.SetPan(panDelta);
+            if (subscribe)
+            {
+                _zoomProvider.onDelta += OnZoomDelta;
+            }
+            else
+            {
+                _zoomProvider.onDelta -= OnZoomDelta;
+            }
         }
 
         private void OnZoomDelta(float zoom)
@@ -72,48 +73,48 @@ namespace Main.Gameplay.Managers
             _target.SetZoom(cameraRay.direction, zoom);
         }
 
-        protected override void SubscribeInner(bool subscribe)
+        public void SetPanAllowed(bool allowed)
         {
+            IsPanAllowed = allowed;
+            if (!IsPanAllowed)
+                _target?.SetPan(Vector2.zero);
+        }
+
+        #endregion
+
+        #region SubscribeToPan
+
+        private void SubscribeToPan(bool subscribe)
+        {
+            if (_panProvider == null)
+                return;
+
             if (subscribe)
             {
-                if (_zoomProvider)
-                {
-                    _zoomProvider.onDelta += OnZoomDelta;
-                }
-
-                if (_panProvider)
-                {
-                    _panProvider.onDelta += OnPanDelta;
-                }
-
-                if (_cursorPositionProvider)
-                {
-
-                }
+                _panProvider.onDelta += OnPanDelta;
             }
             else
             {
-                if (_zoomProvider)
-                {
-                    _zoomProvider.onDelta -= OnZoomDelta;
-                }
-
-                if (_panProvider)
-                {
-                    _panProvider.onDelta -= OnPanDelta;
-                }
-
-                if (_cursorPositionProvider)
-                {
-
-                }
+                _panProvider.onDelta -= OnPanDelta;
             }
         }
 
-        protected override void OnDestroy()
+        private void OnPanDelta(Vector2 panDelta)
         {
-            SetActive(false);
-            base.OnDestroy();
+            if (!IsActive) return;
+            if (!IsPanAllowed) return;
+            if (_target == null) return;
+
+            _target.SetPan(panDelta);
         }
+
+        public void SetZoomAllowed(bool allowed)
+        {
+            IsZoomAllowed = allowed;
+            if (!IsZoomAllowed)
+                _target?.SetZoom(Vector3.zero, 0f);
+        }
+
+        #endregion
     }
 }

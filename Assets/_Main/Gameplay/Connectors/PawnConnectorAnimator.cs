@@ -1,19 +1,20 @@
 using Main.Common.Behaviours;
-using Main.Gameplay.Animations;
+using Main.Gameplay.Pawns.Animations;
 using UnityEngine;
 
 namespace Main.Gameplay.Connectors
 {
+    [DisallowMultipleComponent]
     public class PawnConnectorAnimator : AbstractPawnEntityAnimator
     {
-        [SerializeField] private Connector _connector;
+        [SerializeField] private ConnectorSelectable _connectorSelectable;
 
         protected override void InitComponents()
         {
             base.InitComponents();
 
-            if (_connector == null)
-                _connector = GetComponent<Connector>();
+            if (_connectorSelectable == null)
+                _connectorSelectable = GetComponent<ConnectorSelectable>();
         }
 
         #region Subscribe
@@ -30,16 +31,16 @@ namespace Main.Gameplay.Connectors
 
         protected void SubscribeToConnector(bool subscribe)
         {
-            if (_connector == null)
+            if (_connectorSelectable == null)
                 return;
 
             if (subscribe)
             {
-                _connector.onSelectedChanged += OnSelectedChanged;
+                _connectorSelectable.onSelectedChanged += OnSelectedChanged;
             }
             else
             {
-                _connector.onSelectedChanged -= OnSelectedChanged;
+                _connectorSelectable.onSelectedChanged -= OnSelectedChanged;
             }
         }
 

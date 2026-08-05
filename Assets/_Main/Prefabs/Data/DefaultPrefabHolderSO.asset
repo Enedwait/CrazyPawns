@@ -16,3 +16,5 @@ MonoBehaviour:
     type: 3}
   <Pawn>k__BackingField: {fileID: 5881223633913811714, guid: e6d386ddfbd55e6419868758861c5f8c,
     type: 3}
+  <Connection>k__BackingField: {fileID: 1142342125995553335, guid: 99ebe0aa02f9fd34c87053f325f76b07,
+    type: 3}

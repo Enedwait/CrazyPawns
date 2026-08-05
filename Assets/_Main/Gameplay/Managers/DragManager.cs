@@ -1,5 +1,6 @@
 using Main.Common.Behaviours;
 using Main.Gameplay.Cameras;
+using Main.Gameplay.Players;
 using Main.Infrastructure.Controls.Providers;
 using UnityEngine;
 using UnityEngine.Events;
@@ -8,31 +9,29 @@ using Zenject;
 namespace Main.Gameplay.Managers
 {
     [DisallowMultipleComponent]
-    public sealed class DragManager : AbstractMonoBehaviourExtended
+    public sealed class DragManager : AbstractManager
     {
-        [SerializeField] private ClickProvider _clickProvider;
-        [SerializeField] private Vector2DeltaProvider _cursorDeltaProvider;
-        [SerializeField] private CursorPositionProvider _cursorPositionProvider;
-
+        private ClickProvider _clickProvider;
+        private Vector2DeltaProvider _cursorDeltaProvider;
+        private CursorPositionProvider _cursorPositionProvider;
         private ICameraProvider _cameraProvider;
         private Camera Camera => _cameraProvider.GetCamera();
-
-        public bool IsActive { get; private set; }
+        
         public bool IsDragging { get; private set; }
         public AbstractDraggable Current { get; private set; }
 
-        public event UnityAction<AbstractDraggable> onDragStarted;
-        public event UnityAction<AbstractDraggable> onDragCompleted;
+        public event UnityAction<DragStartedEventArgs> onDragStarted;
+        public event UnityAction<DragEndedEventArgs> onDragCompleted;
 
         [Inject]
-        private void Construct(ICameraProvider cameraProvider)
+        private void Construct(
+            ICameraProvider cameraProvider,
+            PlayerInputHandler inputHandler)
         {
             this._cameraProvider = cameraProvider;
-        }
-
-        public void SetActive(bool active)
-        {
-            IsActive = active;
+            this._clickProvider = inputHandler.ClickProvider;
+            this._cursorPositionProvider = inputHandler.CursorPositionProvider;
+            this._cursorDeltaProvider = inputHandler.CursorDeltaProvider;
         }
 
         public bool BeginDrag(AbstractDraggable draggable)
@@ -66,32 +65,27 @@ namespace Main.Gameplay.Managers
             return true;
         }
 
-        private void OnSelected(AbstractSelectable selected)
-        {
-            BeginDrag(selected.GetComponent<AbstractDraggable>());
-        }
-        
-        private void OnReleased(AbstractSelectable released)
-        {
-            EndDrag();
-        }
+        #region Event Raisers
 
-        private void OnClick()
-        { }
+        private void RaiseOnDragStarted(AbstractDraggable draggable) => 
+            onDragStarted?.Invoke(new DragStartedEventArgs(this, draggable));
 
-        private void OnClickCanceled()
-        {
-            EndDrag();
-        }
+        private void RaiseOnDragCompleted(AbstractDraggable draggable) => 
+            onDragCompleted?.Invoke(new DragEndedEventArgs(this, draggable));
 
-        private void RaiseOnDragStarted(AbstractDraggable draggable) => onDragStarted?.Invoke(draggable);
-        private void RaiseOnDragCompleted(AbstractDraggable draggable) => onDragCompleted?.Invoke(draggable);
+        #endregion
+
+        #region Subscribe
 
         protected override void SubscribeInner(bool subscribe)
         {
             SubscribeToClick(subscribe);
             SubscribeToCursorDelta(subscribe);
         }
+
+        #endregion
+
+        #region SubscribeToClick
 
         private void SubscribeToClick(bool subscribe)
         {
@@ -109,6 +103,18 @@ namespace Main.Gameplay.Managers
                 _clickProvider.onClickCanceled -= OnClickCanceled;
             }
         }
+
+        private void OnClick()
+        { }
+
+        private void OnClickCanceled()
+        {
+            EndDrag();
+        }
+
+        #endregion
+
+        #region SubscribeToCursorDelta
 
         private void SubscribeToCursorDelta(bool subscribe)
         {
@@ -136,10 +142,9 @@ namespace Main.Gameplay.Managers
             Current.Drag(direction);
         }
 
-        protected override void OnDestroy()
-        {
-            SetActive(false);
-            base.OnDestroy();
-        }
+        #endregion
     }
+
+    public record DragStartedEventArgs(DragManager DragManager, AbstractDraggable Draggable);
+    public record DragEndedEventArgs(DragManager DragManager, AbstractDraggable Draggable);
 }

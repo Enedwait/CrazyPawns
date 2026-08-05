@@ -25,6 +25,7 @@ namespace Main.Gameplay.Pawns
         protected override void Reinitialize(PawnSpawnParameters p1, Pawn item)
         {
             base.Reinitialize(p1, item);
+            item.ResetValues();
             item.transform.position = p1.Position;
         }
     }

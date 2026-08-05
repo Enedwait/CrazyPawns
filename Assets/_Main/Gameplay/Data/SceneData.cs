@@ -19,6 +19,7 @@ namespace Main.Gameplay.Data
         [field: SerializeField] public float CellSize { get; protected set; } = 1.5f;
 
         [field: SerializeField, Header("Parameters")] public bool DoSpawnPawns { get; protected set; }
+        [field: SerializeField] public int InitialConnectionCount { get; protected set; } = 64;
 
         public PawnSpawnerParameters GetPawnSpawnerParameters() => new PawnSpawnerParameters
         {

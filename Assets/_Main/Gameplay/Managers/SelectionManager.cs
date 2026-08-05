@@ -1,6 +1,7 @@
 using Main.Common.Behaviours;
 using Main.Common.Extensions;
 using Main.Gameplay.Cameras;
+using Main.Gameplay.Players;
 using Main.Infrastructure.Controls.Providers;
 using UnityEngine;
 using UnityEngine.Events;
@@ -9,19 +10,18 @@ using Zenject;
 namespace Main.Gameplay.Managers
 {
     [DisallowMultipleComponent]
-    public class SelectionManager : AbstractMonoBehaviourExtended
+    public class SelectionManager : AbstractManager
     {
-        [SerializeField] private ClickProvider _clickProvider;
-        [SerializeField] private CursorPositionProvider _cursorPositionProvider;
         [SerializeField] protected int _maxHitsCount = 16;
         [SerializeField] private float _maxDistance = 1000f;
         [SerializeField] private LayerMask _layersToCheck;
 
         private RaycastHit[] _hits;
         private ICameraProvider _cameraProvider;
+        private ClickProvider _clickProvider;
+        private CursorPositionProvider _cursorPositionProvider;
         private Camera Camera => _cameraProvider.GetCamera();
 
-        public bool IsActive { get; private set; }
         public AbstractSelectable Current { get; private set; }
 
         public event UnityAction<SelectedEventArgs> onSelected;
@@ -30,33 +30,24 @@ namespace Main.Gameplay.Managers
         #region Inject
 
         [Inject]
-        private void Construct(ICameraProvider cameraProvider)
+        private void Construct(
+            ICameraProvider cameraProvider,
+            PlayerInputHandler inputHandler)
         {
             this._cameraProvider = cameraProvider;
+            this._cursorPositionProvider = inputHandler.CursorPositionProvider;
+            this._clickProvider = inputHandler.ClickProvider;
         }
 
         #endregion
 
         #region Unity Methods
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+
             _hits = new RaycastHit[_maxHitsCount];
-        }
-
-        protected override void OnDestroy()
-        {
-            SetActive(false);
-            base.OnDestroy();
-        }
-
-        #endregion
-
-        #region SetActive
-
-        public void SetActive(bool active)
-        {
-            IsActive = active;
         }
 
         #endregion

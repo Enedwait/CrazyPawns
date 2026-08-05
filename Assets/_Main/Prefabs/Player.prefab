@@ -90,6 +90,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b955802b9caeff346b5d1be27e5a96d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _inputHandler: {fileID: 5730486503003414014}
 --- !u!1 &5968532937769003398
 GameObject:
   m_ObjectHideFlags: 0
@@ -259,11 +260,11 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 618830754027540011}
-  - {fileID: 1674242825869346491}
   - {fileID: 338510656876309903}
   - {fileID: 2613860148853353271}
   - {fileID: 917296623275728015}
+  - {fileID: 1674242825869346491}
+  - {fileID: 618830754027540011}
   m_Father: {fileID: 6895776737645702612}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &9100632791414609833
@@ -322,10 +323,12 @@ GameObject:
   m_Component:
   - component: {fileID: 6895776737645702612}
   - component: {fileID: 7262994675176587618}
+  - component: {fileID: 5730486503003414014}
   - component: {fileID: 3863741637336688486}
   - component: {fileID: 5549013632698700001}
   - component: {fileID: 5089510815769069808}
   - component: {fileID: 5932170239659653663}
+  - component: {fileID: 6292045119410477081}
   - component: {fileID: 727279191508306738}
   m_Layer: 0
   m_Name: Player
@@ -363,10 +366,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bc8077a067056944ba17dcf185d9ee5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerInput: {fileID: 3863741637336688486}
   _selectionManager: {fileID: 5089510815769069808}
   _panAndZoomManager: {fileID: 5549013632698700001}
   _dragManager: {fileID: 5932170239659653663}
+  _connectionManager: {fileID: 6292045119410477081}
+--- !u!114 &5730486503003414014
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9214588622341455534}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfb75dd037108f74db75046010b9749b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <PlayerInput>k__BackingField: {fileID: 3863741637336688486}
+  <ClickProvider>k__BackingField: {fileID: 1913932111443775554}
+  <CursorPositionProvider>k__BackingField: {fileID: 3683305244833904071}
+  <CursorDeltaProvider>k__BackingField: {fileID: 6660318743783985117}
+  <PanProvider>k__BackingField: {fileID: 8733519126271409330}
+  <ZoomProvider>k__BackingField: {fileID: 5946349322620243269}
 --- !u!114 &3863741637336688486
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -447,6 +468,23 @@ MonoBehaviour:
   _clickProvider: {fileID: 1913932111443775554}
   _cursorDeltaProvider: {fileID: 6660318743783985117}
   _cursorPositionProvider: {fileID: 3683305244833904071}
+--- !u!114 &6292045119410477081
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9214588622341455534}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffb7460ab41859c47b25515e18c22c7b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _maxHitsCount: 16
+  _maxDistance: 1000
+  _layersToCheck:
+    serializedVersion: 2
+    m_Bits: 1
 --- !u!114 &727279191508306738
 MonoBehaviour:
   m_ObjectHideFlags: 0

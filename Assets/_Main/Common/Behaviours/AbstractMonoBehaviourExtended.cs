@@ -15,7 +15,7 @@ namespace Main.Common.Behaviours
 #if UNITY_EDITOR
         protected virtual void OnValidate()
         {
-            InitComponentsOnValidate();
+            InitComponents();
         }
 #endif
         protected virtual void Awake()
@@ -38,9 +38,6 @@ namespace Main.Common.Behaviours
         #region Init
 
         protected virtual void InitComponents()
-        { }
-
-        protected virtual void InitComponentsOnValidate()
         { }
 
         #endregion
