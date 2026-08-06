@@ -1,6 +1,5 @@
 using Cysharp.Threading.Tasks;
 using Main.Common.Extensions;
-using System;
 using UnityEngine;
 
 namespace Main.Gameplay.Checkerboards
@@ -60,13 +59,4 @@ namespace Main.Gameplay.Checkerboards
 
         #endregion
     }
-
-    public interface ICheckerboard
-    {
-        UniTask InitializeAsync(CheckerboardInitArgs args);
-
-        bool IsInside(Vector3 point);
-    }
-
-    public record CheckerboardInitArgs(int BoardSize, float CellSize, Color WhiteCellColor, Color BlackCellColor);
 }

@@ -1,5 +1,6 @@
 using System;
 using Main.Common.Behaviours;
+using Main.Gameplay.Connectors.Animations;
 using UnityEngine;
 using Zenject;
 
@@ -15,7 +16,7 @@ namespace Main.Gameplay.Connectors
 
         [SerializeField] private Transform root;
 
-        private ConnectorRegistry _registry;
+        private IConnectorRegistry _registry;
 
         #endregion
 
@@ -31,7 +32,7 @@ namespace Main.Gameplay.Connectors
         #region Inject
 
         [Inject]
-        private void Construct(ConnectorRegistry registry)
+        private void Construct(IConnectorRegistry registry)
         {
             this._registry = registry;
         }

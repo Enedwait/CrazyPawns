@@ -62,11 +62,7 @@ namespace Main.Gameplay.Pawns
         #endregion
     }
 
-    public interface IPawnSpawner
-    {
-        void SpawnAll();
-        Pawn SpawnOne(PawnSpawnerParameters parameters);
-    }
+    
 
     [Serializable]
     public struct PawnSpawnerParameters

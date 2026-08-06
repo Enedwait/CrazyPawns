@@ -2,6 +2,7 @@ using Main.Common.Behaviours;
 using Main.Common.Extensions;
 using Main.Gameplay.Connections;
 using Main.Gameplay.Connectors;
+using Main.Gameplay.Connectors.Animations;
 using Main.Gameplay.Players;
 using Main.Infrastructure.Controls.Providers;
 using UnityEngine;
@@ -57,14 +58,14 @@ namespace Main.Gameplay.Managers.Connection
             IConnectorRegistry connectorRegistry,
             ICameraProvider cameraProvider, 
             IConnectionSpawner connectionSpawner,
-            PlayerInputHandler inputHandler)
+            IPlayerInputHolder inputHolder)
         {
             this._connectorRegistry = connectorRegistry;
             this._cameraProvider = cameraProvider;
             this._connectionSpawner = connectionSpawner;
-            this._clickProvider = inputHandler.ClickProvider;
-            this._cursorPositionProvider = inputHandler.CursorPositionProvider;
-            this._cursorDeltaProvider = inputHandler.PanProvider;
+            this._clickProvider = inputHolder.ClickProvider;
+            this._cursorPositionProvider = inputHolder.CursorPositionProvider;
+            this._cursorDeltaProvider = inputHolder.PanProvider;
         }
 
         #endregion

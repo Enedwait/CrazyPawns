@@ -1,12 +1,10 @@
 using Main.Common.Behaviours;
 using Main.Gameplay.Data;
-using Main.Gameplay.Pawns;
-using Main.Gameplay.Pawns.Animations;
 using System;
 using UnityEngine;
 using Zenject;
 
-namespace Main.Gameplay.Animations
+namespace Main.Gameplay.Pawns.Animations
 {
     public sealed class PawnAnimator : AbstractPawnAnimator
     {
@@ -18,7 +16,7 @@ namespace Main.Gameplay.Animations
         [SerializeField] private Renderer _renderer;
 
         private SceneData _sceneData;
-        private PawnDraggable _pawnDraggable;
+        private IPawnDraggable _pawnDraggable;
         private Material _originalMaterial;
 
         #endregion
@@ -36,7 +34,7 @@ namespace Main.Gameplay.Animations
         #region Inject
 
         [Inject]
-        private void Construct(SceneData sceneData, PawnDraggable pawnDraggable)
+        private void Construct(SceneData sceneData, IPawnDraggable pawnDraggable)
         {
             this._sceneData = sceneData;
             this._pawnDraggable = pawnDraggable;

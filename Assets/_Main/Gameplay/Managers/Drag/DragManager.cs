@@ -49,12 +49,12 @@ namespace Main.Gameplay.Managers.Drag
         [Inject]
         private void Construct(
             ICameraProvider cameraProvider,
-            PlayerInputHandler inputHandler)
+            IPlayerInputHolder inputHolder)
         {
             this._cameraProvider = cameraProvider;
-            this._clickProvider = inputHandler.ClickProvider;
-            this._cursorPositionProvider = inputHandler.CursorPositionProvider;
-            this._cursorDeltaProvider = inputHandler.CursorDeltaProvider;
+            this._clickProvider = inputHolder.ClickProvider;
+            this._cursorPositionProvider = inputHolder.CursorPositionProvider;
+            this._cursorDeltaProvider = inputHolder.CursorDeltaProvider;
         }
 
         #endregion

@@ -43,8 +43,5 @@ namespace Main.Gameplay.Pawns
         #endregion
     }
 
-    public interface IPawnSelectable : ISelectable
-    {
-        IDraggable Draggable { get; }
-    }
+    
 }

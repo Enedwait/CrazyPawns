@@ -1,11 +1,11 @@
 using Main.Common.Behaviours;
-using Main.Gameplay.Animations;
 using Main.Gameplay.Data;
 using System;
+using Main.Gameplay.Pawns;
 using UnityEngine;
 using Zenject;
 
-namespace Main.Gameplay.Connectors
+namespace Main.Gameplay.Connectors.Animations
 {
     [DisallowMultipleComponent]
     public sealed class PawnConnectorAnimator : AbstractConnectorAnimator
@@ -18,7 +18,7 @@ namespace Main.Gameplay.Connectors
         [SerializeField] private Renderer _renderer;
 
         private SceneData _sceneData;
-        private PawnDraggable _pawnDraggable;
+        private IPawnDraggable _pawnDraggable;
         private Material _originalMaterial;
 
         #endregion
@@ -36,7 +36,7 @@ namespace Main.Gameplay.Connectors
         #region Inject
 
         [Inject]
-        private void Construct(SceneData sceneData, PawnDraggable pawnDraggable)
+        private void Construct(SceneData sceneData, IPawnDraggable pawnDraggable)
         {
             this._sceneData = sceneData;
             this._pawnDraggable = pawnDraggable;
@@ -200,18 +200,6 @@ namespace Main.Gameplay.Connectors
             else
                 ToState(ConnectorAnimatorState.Idle);
         }
-
-        #endregion
-    }
-
-    public abstract class AbstractConnectorAnimator : AbstractEntityAnimator
-    {
-        #region Play
-
-        protected abstract void PlayActive();
-        protected abstract void PlayReadyToConnect();
-        protected abstract void PlayDelete();
-        protected abstract void PlayRestore();
 
         #endregion
     }

@@ -43,11 +43,11 @@ namespace Main.Gameplay.Managers.Selection
         [Inject]
         private void Construct(
             ICameraProvider cameraProvider,
-            PlayerInputHandler inputHandler)
+            IPlayerInputHolder inputHolder)
         {
             this._cameraProvider = cameraProvider;
-            this._cursorPositionProvider = inputHandler.CursorPositionProvider;
-            this._clickProvider = inputHandler.ClickProvider;
+            this._cursorPositionProvider = inputHolder.CursorPositionProvider;
+            this._clickProvider = inputHolder.ClickProvider;
         }
 
         #endregion

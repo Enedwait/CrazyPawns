@@ -46,7 +46,7 @@ namespace Main.Gameplay.Controllers
             _pawnSpawner.SpawnAll();
 
             Debug.Log($"Инициализация игрока...");
-            Player player = _playerSpawner.SpawnPlayer();
+            Player player = _playerSpawner.Spawn();
             await player.InitializeAsync(_sceneData.GetPlayerInitArgs());
 
             _connectionUpdateManager.SetActive(true);

@@ -1,4 +1,3 @@
-using Main.Common.Behaviours;
 using UnityEngine;
 using Zenject;
 
@@ -17,10 +16,12 @@ namespace Main.Gameplay.Pawns
 
         public override void InstallBindings()
         {
-            Container.BindInstance(_pawnDraggable)
+            Container.BindInterfacesAndSelfTo<PawnDraggable>()
+                .FromInstance(_pawnDraggable)
                 .AsSingle();
 
-            Container.BindInstance(_pawnSelectable)
+            Container.BindInterfacesAndSelfTo<PawnSelectable>()
+                .FromInstance(_pawnSelectable)
                 .AsSingle();
         }
 

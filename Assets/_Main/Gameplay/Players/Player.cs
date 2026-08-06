@@ -5,7 +5,6 @@ using Main.Gameplay.Managers.Connection;
 using Main.Gameplay.Managers.Drag;
 using Main.Gameplay.Managers.PanAndZoom;
 using Main.Gameplay.Managers.Selection;
-using Main.Gameplay.Targets;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Zenject;
@@ -26,15 +25,15 @@ namespace Main.Gameplay.Players
 
         #region Fields
 
-        private PlayerActionProcessor _actionProcessor;
-        private PlayerInputHandler _inputHandler;
+        private IPlayerActionProcessor _actionProcessor;
+        private IPlayerInputHolder _inputHolder;
         private ICameraProvider _cameraProvider;
 
         #endregion
 
         #region Properties
 
-        private PlayerInput PlayerInput => _inputHandler.PlayerInput;
+        private PlayerInput PlayerInput => _inputHolder.PlayerInput;
 
         #endregion
 
@@ -43,11 +42,11 @@ namespace Main.Gameplay.Players
         [Inject]
         private void Construct(
             ICameraProvider cameraProvider,
-            PlayerInputHandler inputHandler,
-            ConnectorRegistry connectorRegistry)
+            IPlayerInputHolder inputHolder,
+            IConnectorRegistry connectorRegistry)
         {
             this._cameraProvider = cameraProvider;
-            this._inputHandler = inputHandler;
+            this._inputHolder = inputHolder;
 
             _actionProcessor = new PlayerActionProcessor(new PlayerActionProcessorParameters(
                _selectionManager, _panAndZoomManager, _dragManager, _connectionManager));
@@ -70,12 +69,9 @@ namespace Main.Gameplay.Players
 
         #region Subscribe
 
-
         protected override void SubscribeInner(bool subscribe)
         { }
 
         #endregion
     }
-
-    public record PlayerInitArgs(Camera Camera, PanAndZoomTarget PanAndZoomTarget);
 }

@@ -33,12 +33,12 @@ namespace Main.Gameplay.Managers.PanAndZoom
         [Inject]
         private void Construct(
             ICameraProvider cameraProvider,
-            PlayerInputHandler inputHandler)
+            IPlayerInputHolder inputHolder)
         {
             this._cameraProvider = cameraProvider;
-            this._cursorPositionProvider = inputHandler.CursorPositionProvider;
-            this._panProvider = inputHandler.PanProvider;
-            this._zoomProvider = inputHandler.ZoomProvider;
+            this._cursorPositionProvider = inputHolder.CursorPositionProvider;
+            this._panProvider = inputHolder.PanProvider;
+            this._zoomProvider = inputHolder.ZoomProvider;
         }
 
         #endregion

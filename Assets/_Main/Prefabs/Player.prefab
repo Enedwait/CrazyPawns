@@ -90,7 +90,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b955802b9caeff346b5d1be27e5a96d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _inputHandler: {fileID: 5730486503003414014}
+  _inputHolder: {fileID: 5730486503003414014}
 --- !u!1 &5968532937769003398
 GameObject:
   m_ObjectHideFlags: 0
@@ -382,12 +382,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cfb75dd037108f74db75046010b9749b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <PlayerInput>k__BackingField: {fileID: 3863741637336688486}
-  <ClickProvider>k__BackingField: {fileID: 1913932111443775554}
-  <CursorPositionProvider>k__BackingField: {fileID: 3683305244833904071}
-  <CursorDeltaProvider>k__BackingField: {fileID: 6660318743783985117}
-  <PanProvider>k__BackingField: {fileID: 8733519126271409330}
-  <ZoomProvider>k__BackingField: {fileID: 5946349322620243269}
+  _playerInput: {fileID: 3863741637336688486}
+  _clickProvider: {fileID: 1913932111443775554}
+  _cursorPositionProvider: {fileID: 3683305244833904071}
+  _cursorDeltaProvider: {fileID: 6660318743783985117}
+  _panProvider: {fileID: 8733519126271409330}
+  _zoomProvider: {fileID: 5946349322620243269}
 --- !u!114 &3863741637336688486
 MonoBehaviour:
   m_ObjectHideFlags: 0

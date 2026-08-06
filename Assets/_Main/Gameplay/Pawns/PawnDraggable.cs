@@ -1,40 +1,34 @@
+using Main.Common.Behaviours;
 using Main.Gameplay.Checkerboards;
-using Main.Gameplay.Data;
 using UnityEngine;
 using UnityEngine.Events;
 using Zenject;
 
-namespace Main.Common.Behaviours
+namespace Main.Gameplay.Pawns
 {
     public class PawnDraggable : AbstractDraggable, IPawnDraggable
     {
         #region Fields
 
         private bool isInsideCheckerBoard = true;
-        private SceneData _sceneData;
-
-        #endregion
-
-        #region Properties
-
-        private Checkerboard Checkerboard => _sceneData.Checkerboard;
+        private ICheckerboard _checkerboard;
 
         #endregion
 
         #region Events
 
-        public UnityAction<PawnEnterCheckerboardEventArgs> onEnterCheckerboard;
-        public UnityAction<PawnExitCheckerboardEventArgs> onExitCheckerboard;
-        public UnityAction<PawnDragEndedOutsideEventArgs> onDragEndedOutside;
+        public event UnityAction<PawnEnterCheckerboardEventArgs> onEnterCheckerboard;
+        public event UnityAction<PawnExitCheckerboardEventArgs> onExitCheckerboard;
+        public event UnityAction<PawnDragEndedOutsideEventArgs> onDragEndedOutside;
 
         #endregion
 
         #region Inject
 
         [Inject]
-        private void Construct(SceneData sceneData)
+        private void Construct(ICheckerboard checkerboard)
         {
-            this._sceneData = sceneData;
+            this._checkerboard = checkerboard;
         }
 
         #endregion
@@ -49,7 +43,7 @@ namespace Main.Common.Behaviours
         protected override void DragInner(Vector3 direction)
         {
             Target.Translate(direction, Space.World);
-            CheckCheckerboard(Checkerboard);
+            CheckCheckerboard(_checkerboard);
         }
 
         private void CheckCheckerboard(ICheckerboard checkerboard)
@@ -62,7 +56,7 @@ namespace Main.Common.Behaviours
                 if (!isInsideCheckerBoard)
                 {
                     isInsideCheckerBoard = true;
-                    RaiseOnEnterCheckerboard(Checkerboard);
+                    RaiseOnEnterCheckerboard(_checkerboard);
                 }
             }
             else
@@ -70,7 +64,7 @@ namespace Main.Common.Behaviours
                 if (isInsideCheckerBoard)
                 {
                     isInsideCheckerBoard = false;
-                    RaiseOnExitCheckerboard(Checkerboard);
+                    RaiseOnExitCheckerboard(_checkerboard);
                 }
             }
         }
@@ -84,7 +78,7 @@ namespace Main.Common.Behaviours
             if (isInsideCheckerBoard)
             { }
             else 
-                RaiseOnDragEndedOutside(Checkerboard);
+                RaiseOnDragEndedOutside(_checkerboard);
 
             return true;
         }
@@ -111,11 +105,4 @@ namespace Main.Common.Behaviours
 
         #endregion
     }
-
-    public interface IPawnDraggable : IDraggable
-    { }
-
-    public record PawnEnterCheckerboardEventArgs(IPawnDraggable Draggable, ICheckerboard Checkerboard);
-    public record PawnExitCheckerboardEventArgs(IPawnDraggable Draggable, ICheckerboard Checkerboard);
-    public record PawnDragEndedOutsideEventArgs(IPawnDraggable Draggable, ICheckerboard Checkerboard);
 }

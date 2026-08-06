@@ -12,8 +12,8 @@ namespace Main.Gameplay.Pawns
         private bool _isPooled = false;
         private bool _isDespawned = false;
         private IMemoryPool _pool;
-        private PawnDraggable _pawnDraggable;
-        private ConnectorRegistry _connectorRegistry;
+        private IPawnDraggable _pawnDraggable;
+        private IConnectorRegistry _connectorRegistry;
 
         #endregion
 
@@ -21,8 +21,8 @@ namespace Main.Gameplay.Pawns
 
         [Inject]
         private void Construct(
-            PawnDraggable pawnDraggable, 
-            ConnectorRegistry connectorRegistry)
+            IPawnDraggable pawnDraggable, 
+            IConnectorRegistry connectorRegistry)
         {
             this._pawnDraggable = pawnDraggable;
             this._connectorRegistry = connectorRegistry;

@@ -8,11 +8,10 @@ using Main.Gameplay.Managers.Connection;
 using Main.Gameplay.Managers.Drag;
 using Main.Gameplay.Managers.PanAndZoom;
 using Main.Gameplay.Managers.Selection;
-using Main.Gameplay.Targets;
 
 namespace Main.Gameplay.Players
 {
-    public sealed class PlayerActionProcessor  : AbstractSubscriber
+    public sealed class PlayerActionProcessor  : AbstractSubscriber, IPlayerActionProcessor
     {
         #region Fields
 
@@ -199,12 +198,4 @@ namespace Main.Gameplay.Players
 
         #endregion
     }
-
-    public record PlayerActionProcessorParameters(
-        ISelectionManager SelectionManager, 
-        IPanAndZoomManager PanAndZoomManager, 
-        IDragManager DragManager, 
-        IConnectionManager ConnectionManager);
-
-    public record PlayerActionProcessorInitArgs(PanAndZoomTarget PanAndZoomTarget);
 }

@@ -20,17 +20,9 @@ namespace Main.Gameplay.Players
 
         #region Spawn
 
-        public Player SpawnPlayer()
-        {
-            _player = _playerFactory.Create();
-            return _player;
-        }
+        public Player Spawn() =>
+            _playerFactory.Create();
 
         #endregion
-    }
-
-    public interface IPlayerSpawner
-    {
-        Player SpawnPlayer();
     }
 }

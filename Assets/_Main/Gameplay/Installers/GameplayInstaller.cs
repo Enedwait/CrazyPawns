@@ -1,3 +1,4 @@
+using Main.Gameplay.Checkerboards;
 using Main.Gameplay.Data;
 using Main.Gameplay.Pawns;
 using Main.Gameplay.Players;
@@ -23,6 +24,7 @@ namespace Main.Gameplay.Installers
         {
             InstallInstances();
             InstallPlayer();
+            InstallCheckerboard();
             InstallPawns();
             InstallConnectors();
             InstallConnections();
@@ -57,6 +59,17 @@ namespace Main.Gameplay.Installers
 
         #endregion
 
+        #region Checkerboard
+
+        private void InstallCheckerboard()
+        {
+            Container.Bind<ICheckerboard>()
+                .FromInstance(_sceneData.Checkerboard)
+                .AsSingle();
+        }
+
+        #endregion
+
         #region Pawns
 
         private void InstallPawns()
@@ -84,7 +97,7 @@ namespace Main.Gameplay.Installers
 
         private void InstallConnectors()
         {
-            Container.BindInterfacesAndSelfTo<ConnectorRegistry>()
+            Container.Bind<IConnectorRegistry>()
                 .FromInstance(new ConnectorRegistry(_sceneData.CrazyPawnSettings.InitialPawnCount * 5))
                 .AsSingle()
                 .NonLazy();

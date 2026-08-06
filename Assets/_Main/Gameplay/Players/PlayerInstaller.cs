@@ -8,7 +8,7 @@ namespace Main.Gameplay.Players
     {
         #region Fields
 
-        [SerializeField] private PlayerInputHandler _inputHandler;
+        [SerializeField] private PlayerInputHolder _inputHolder;
 
         #endregion
 
@@ -20,7 +20,8 @@ namespace Main.Gameplay.Players
                 .FromInstance(new CameraProvider(null))
                 .AsSingle();
 
-            Container.BindInstance(_inputHandler)
+            Container.BindInterfacesAndSelfTo<PlayerInputHolder>()
+                .FromInstance(_inputHolder)
                 .AsSingle();
         }
 
