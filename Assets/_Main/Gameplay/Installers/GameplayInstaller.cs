@@ -11,7 +11,13 @@ namespace Main.Gameplay.Installers
 {
     public sealed class GameplayInstaller : MonoInstaller
     {
+        #region Fields
+
         [SerializeField] private SceneData _sceneData;
+
+        #endregion
+
+        #region Install
 
         public override void InstallBindings()
         {
@@ -22,6 +28,10 @@ namespace Main.Gameplay.Installers
             InstallConnections();
         }
 
+        #endregion
+
+        #region Instances
+
         private void InstallInstances()
         {
             Container.BindInstance(_sceneData)
@@ -30,6 +40,10 @@ namespace Main.Gameplay.Installers
             Container.BindInstance(_sceneData.MainCamera)
                 .AsSingle();
         }
+
+        #endregion
+
+        #region Player
 
         private void InstallPlayer()
         {
@@ -40,6 +54,10 @@ namespace Main.Gameplay.Installers
                 .AsSingle()
                 .NonLazy();
         }
+
+        #endregion
+
+        #region Pawns
 
         private void InstallPawns()
         {
@@ -60,6 +78,10 @@ namespace Main.Gameplay.Installers
                 .NonLazy();
         }
 
+        #endregion
+
+        #region Connectors
+
         private void InstallConnectors()
         {
             Container.Bind<ConnectorRegistry>()
@@ -67,6 +89,10 @@ namespace Main.Gameplay.Installers
                 .AsSingle()
                 .NonLazy();
         }
+
+        #endregion
+
+        #region Connections
 
         private void InstallConnections()
         {
@@ -93,5 +119,7 @@ namespace Main.Gameplay.Installers
                 .AsSingle()
                 .NonLazy();
         }
+
+        #endregion
     }
 }

@@ -5,18 +5,24 @@ using UnityEngine.InputSystem;
 
 namespace Main.Infrastructure.Controls.Providers
 {
-    public class CursorPositionProvider : AbstractInputProvider
+    public sealed class CursorPositionProvider : AbstractInputProvider
     {
-        [SerializeField] protected bool useScreenCenter;
-        [SerializeField] protected Vector2 initialCursorPosition = Vector2.zero;
+        #region Fields
 
-        [SerializeField] protected InputActionReference cursorPositionActionReference;
+        [SerializeField] private bool _useScreenCenter = true;
+        [SerializeField] private Vector2 _initialPosition = Vector2.zero;
+        [SerializeField] private InputActionReference _positionActionReference;
 
-        protected InputAction positionAction;
+        private InputAction _positionAction;
+        private Vector2 _cursorPosition;
 
-        protected Vector2 cursorPosition;
+        #endregion
 
-        public Vector2 CursorPosition => cursorPosition;
+        #region Properties
+
+        public Vector2 CursorPosition => _cursorPosition;
+
+        #endregion
 
         #region Unity Methods
 
@@ -25,8 +31,8 @@ namespace Main.Infrastructure.Controls.Providers
         {
             base.OnValidate();
 
-            if (useScreenCenter)
-                initialCursorPosition = ScreenHelper.GetScreenCenter();
+            if (_useScreenCenter)
+                _initialPosition = ScreenHelper.GetScreenCenter();
         }
 #endif
 
@@ -34,10 +40,10 @@ namespace Main.Infrastructure.Controls.Providers
         {
             base.Awake();
 
-            if (useScreenCenter)
-                initialCursorPosition = ScreenHelper.GetScreenCenter();
+            if (_useScreenCenter)
+                _initialPosition = ScreenHelper.GetScreenCenter();
 
-            positionAction = cursorPositionActionReference.action;
+            _positionAction = _positionActionReference.action;
 
             ResetValues();
         }
@@ -53,7 +59,7 @@ namespace Main.Infrastructure.Controls.Providers
             GetCameraRay(camera).GetPointAlongRayWithY(y);
 
         public override void ResetValues() =>
-            cursorPosition = initialCursorPosition;
+            _cursorPosition = _initialPosition;
 
         #endregion
 
@@ -61,17 +67,17 @@ namespace Main.Infrastructure.Controls.Providers
 
         protected override void SubscribeInner(bool subscribe)
         {
-            if (positionAction == null)
+            if (_positionAction == null)
                 return;
 
             if (subscribe)
-                positionAction.performed += OnPositionPerformed;
+                _positionAction.performed += OnPositionPerformed;
             else
-                positionAction.performed -= OnPositionPerformed;
+                _positionAction.performed -= OnPositionPerformed;
         }
 
         private void OnPositionPerformed(InputAction.CallbackContext context) =>
-            cursorPosition = context.ReadValue<Vector2>();
+            _cursorPosition = context.ReadValue<Vector2>();
 
         #endregion
     }

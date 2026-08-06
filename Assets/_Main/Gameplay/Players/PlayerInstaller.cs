@@ -1,23 +1,29 @@
-using Main.Gameplay.Cameras;
+using Main.Common.Behaviours;
 using UnityEngine;
 using Zenject;
 
 namespace Main.Gameplay.Players
 {
-    public class PlayerInstaller : MonoInstaller
+    public sealed class PlayerInstaller : MonoInstaller
     {
+        #region Fields
+
         [SerializeField] private PlayerInputHandler _inputHandler;
+
+        #endregion
+
+        #region Install
 
         public override void InstallBindings()
         {
-            Camera camera = Container.Resolve<Camera>();
-
             Container.Bind<ICameraProvider>()
-                .FromInstance(new CameraProviderProvider(camera))
+                .FromInstance(new CameraProvider(null))
                 .AsSingle();
 
             Container.BindInstance(_inputHandler)
                 .AsSingle();
         }
+
+        #endregion
     }
 }

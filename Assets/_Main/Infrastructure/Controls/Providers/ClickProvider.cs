@@ -6,13 +6,23 @@ namespace Main.Infrastructure.Controls.Providers
 {
     public sealed class ClickProvider : AbstractInputProvider
     {
+        #region Fields
+
         [SerializeField] private InputActionReference _clickActionReference;
 
         private InputAction clickAction;
 
+        #endregion
+
+        #region Events
+
         public event UnityAction onClickStarted;
         public event UnityAction onClickPerformed;
         public event UnityAction onClickCanceled;
+
+        #endregion
+
+        #region Unity Methods
 
         protected override void Awake()
         {
@@ -23,21 +33,24 @@ namespace Main.Infrastructure.Controls.Providers
             ResetValues();
         }
 
-        private void OnClickStarted(InputAction.CallbackContext context) =>
-            RaiseOnClickStarted();
+        #endregion
 
-        private void OnClickPerformed(InputAction.CallbackContext context) =>
-            RaiseOnClickPerformed();
-
-        private void OnClickCanceled(InputAction.CallbackContext context) =>
-            RaiseOnClickCanceled();
+        #region Event Raisers
 
         private void RaiseOnClickStarted() => onClickStarted?.Invoke();
         private void RaiseOnClickPerformed() => onClickPerformed?.Invoke();
         private void RaiseOnClickCanceled() => onClickCanceled?.Invoke();
 
+        #endregion
+
+        #region Reset
+
         public override void ResetValues()
         { }
+
+        #endregion
+
+        #region Subscribe
 
         protected override void SubscribeInner(bool subscribe)
         {
@@ -57,5 +70,16 @@ namespace Main.Infrastructure.Controls.Providers
                 clickAction.canceled -= OnClickCanceled;
             }
         }
+
+        private void OnClickStarted(InputAction.CallbackContext context) =>
+            RaiseOnClickStarted();
+
+        private void OnClickPerformed(InputAction.CallbackContext context) =>
+            RaiseOnClickPerformed();
+
+        private void OnClickCanceled(InputAction.CallbackContext context) =>
+            RaiseOnClickCanceled();
+
+        #endregion
     }
 }

@@ -11,21 +11,34 @@ namespace Main.Gameplay.Connectors
     [RequireComponent(typeof(ConnectorSelectable))]
     public sealed class Connector : AbstractMonoBehaviourExtended
     {
+        #region Fields
+
         [SerializeField] private Transform root;
 
         private ConnectorRegistry _registry;
+
+        #endregion
+
+        #region Properties
 
         public Transform Root => root;
         public ConnectorSocket Socket { get; private set; }
         public PawnConnectorAnimator Animator { get; private set; }
         public ConnectorSelectable Selectable { get; private set; }
 
+        #endregion
+
+        #region Inject
 
         [Inject]
         private void Construct(ConnectorRegistry registry)
         {
             this._registry = registry;
         }
+
+        #endregion
+
+        #region Unity Methods
 
         private void OnEnable()
         {
@@ -43,6 +56,10 @@ namespace Main.Gameplay.Connectors
             base.OnDestroy();
         }
 
+        #endregion
+
+        #region Init
+
         protected override void InitComponents()
         {
             if (root == null) 
@@ -53,7 +70,13 @@ namespace Main.Gameplay.Connectors
             if (Selectable == null) Selectable = GetComponent<ConnectorSelectable>();
         }
 
+        #endregion
+
+        #region Subscribe
+
         protected override void SubscribeInner(bool subscribe)
         { }
+
+        #endregion
     }
 }

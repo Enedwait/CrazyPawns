@@ -4,7 +4,13 @@ namespace Main.Gameplay.Connections
 {
     public class ConnectionSpawner : IInitializable
     {
+        #region Fields
+
         private ConnectionPool _pool;
+
+        #endregion
+
+        #region Init
 
         public ConnectionSpawner(ConnectionPool pool)
         {
@@ -14,11 +20,17 @@ namespace Main.Gameplay.Connections
         public void Initialize()
         { }
 
+        #endregion
+
+        #region Spawn
+
         public Connection Spawn()
         {
             Connection connection = _pool.Spawn();
             connection.OnSpawned(_pool);
             return connection;
         }
+
+        #endregion
     }
 }

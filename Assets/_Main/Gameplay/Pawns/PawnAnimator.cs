@@ -5,13 +5,14 @@ using Main.Gameplay.Pawns.Animations;
 using System;
 using UnityEngine;
 using Zenject;
-using static Main.Gameplay.Connectors.PawnConnectorAnimator;
 
 namespace Main.Gameplay.Animations
 {
     public sealed class PawnAnimator : AbstractPawnAnimator
     {
         public enum PawnAnimatorState { Idle, Active, Delete, Restore }
+        
+        #region Fields
 
         [SerializeField] private PawnSelectable _selectable;
         [SerializeField] private Renderer _renderer;
@@ -20,11 +21,19 @@ namespace Main.Gameplay.Animations
         private PawnDraggable _pawnDraggable;
         private Material _originalMaterial;
 
+        #endregion
+
+        #region Properties
+
         private Material ActiveMaterial => _sceneData.CrazyPawnSettings.ActiveConnectorMaterial;
         private Material SelectedMaterial => _sceneData.Settings.SelectedMaterial;
         private Material DeleteMaterial => _sceneData.CrazyPawnSettings.DeleteMaterial;
 
-        public PawnAnimatorState State { get; protected set; }
+        public PawnAnimatorState State { get; private set; }
+
+        #endregion
+
+        #region Inject
 
         [Inject]
         private void Construct(SceneData sceneData, PawnDraggable pawnDraggable)
@@ -33,11 +42,19 @@ namespace Main.Gameplay.Animations
             this._pawnDraggable = pawnDraggable;
         }
 
+        #endregion
+
+        #region Unity Methods
+
         protected override void Awake()
         {
             base.Awake();
             _originalMaterial = _renderer.material;
         }
+
+        #endregion
+
+        #region Init
 
         protected override void InitComponents()
         {
@@ -49,6 +66,10 @@ namespace Main.Gameplay.Animations
             if (_selectable == null)
                 _selectable = GetComponent<PawnSelectable>();
         }
+
+        #endregion
+
+        #region State of Play
 
         public void ToState(PawnAnimatorState state)
         {
@@ -65,6 +86,10 @@ namespace Main.Gameplay.Animations
                 default: throw new NotImplementedException();
             }
         }
+
+        #endregion
+
+        #region Play
 
         private void Play(PawnAnimatorState state)
         {
@@ -101,6 +126,8 @@ namespace Main.Gameplay.Animations
             State = PawnAnimatorState.Restore;
         }
 
+        #endregion
+
         #region Subscribe
 
         protected override void SubscribeInner(bool subscribe)
@@ -134,7 +161,6 @@ namespace Main.Gameplay.Animations
         {
             ToState(PawnAnimatorState.Restore);
         }
-
 
         private void OnExitCheckerboard(PawnExitCheckerboardEventArgs args)
         {

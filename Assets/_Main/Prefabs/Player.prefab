@@ -181,9 +181,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d38bd1f01fe2e3b4bbdd91eb7a2de8fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  useScreenCenter: 0
-  initialCursorPosition: {x: 0, y: 0}
-  cursorPositionActionReference: {fileID: -5318980608019895140, guid: b4fe038ffde1cb842babd1a8e70f2811,
+  _useScreenCenter: 1
+  _initialPosition: {x: 172, y: 649.5}
+  _positionActionReference: {fileID: -5318980608019895140, guid: b4fe038ffde1cb842babd1a8e70f2811,
     type: 3}
 --- !u!1 &7067567395283175829
 GameObject:
@@ -415,7 +415,7 @@ MonoBehaviour:
       m_Calls: []
   m_ActionEvents: []
   m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: 
+  m_DefaultControlScheme: Keyboard & Mouse
   m_DefaultActionMap: Game
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
@@ -431,9 +431,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 795b48466a120d44b94fe6d466c41d41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cursorPositionProvider: {fileID: 3683305244833904071}
-  _zoomProvider: {fileID: 5946349322620243269}
-  _panProvider: {fileID: 8733519126271409330}
 --- !u!114 &5089510815769069808
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -446,8 +443,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b107de0e901e2f444909a5162c6fe72a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _clickProvider: {fileID: 1913932111443775554}
-  _cursorPositionProvider: {fileID: 3683305244833904071}
   _maxHitsCount: 16
   _maxDistance: 1000
   _layersToCheck:
@@ -465,9 +460,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef16c7157951f4c4ca951d112c7cdbc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _clickProvider: {fileID: 1913932111443775554}
-  _cursorDeltaProvider: {fileID: 6660318743783985117}
-  _cursorPositionProvider: {fileID: 3683305244833904071}
 --- !u!114 &6292045119410477081
 MonoBehaviour:
   m_ObjectHideFlags: 0

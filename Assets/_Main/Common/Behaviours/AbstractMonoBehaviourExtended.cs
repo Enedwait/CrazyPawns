@@ -13,32 +13,19 @@ namespace Main.Common.Behaviours
         #region Unity Methods
 
 #if UNITY_EDITOR
-        protected virtual void OnValidate()
-        {
-            InitComponents();
-        }
+        protected virtual void OnValidate() => InitComponents();
 #endif
-        protected virtual void Awake()
-        {
-            InitComponents();
-        }
+        protected virtual void Awake() => InitComponents();
 
-        protected virtual void Start()
-        {
-            Subscribe(true);
-        }
+        protected virtual void Start() => Subscribe(true);
 
-        protected virtual void OnDestroy()
-        {
-            Subscribe(false);
-        }
+        protected virtual void OnDestroy() => Subscribe(false);
 
         #endregion
 
         #region Init
 
-        protected virtual void InitComponents()
-        { }
+        protected virtual void InitComponents() { }
 
         #endregion
 

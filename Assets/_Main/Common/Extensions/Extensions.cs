@@ -1,7 +1,5 @@
-using System.Net.Sockets;
 using UnityEngine;
 using Random = Unity.Mathematics.Random;
-using Screen = UnityEngine.Device.Screen;
 
 namespace Main.Common.Extensions
 {
@@ -39,9 +37,12 @@ namespace Main.Common.Extensions
 
         public static bool IsInside(this Collider collider, Vector3 point) =>
             collider.ClosestPoint(point) == point;
-
-        public static bool IsNullAsComponent(this object target) =>
-            target == null || (target is Component connector && connector == null);
+        
+        public static bool IsNullOrDestroyed(this object target)
+        {
+            if (target is UnityEngine.Object unityObject) return unityObject == null;
+            return target == null;
+        }
     }
 }
 

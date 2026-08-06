@@ -1,17 +1,13 @@
 using UnityEngine;
 
-namespace Main.Gameplay.Cameras
+namespace Main.Gameplay.Targets
 {
     public sealed class PanAndZoomTarget : MonoBehaviour
     {
-        #region Serialize Fields
+        #region Fields
 
         [SerializeField, Range(0.001f, 10f)] private float _panSpeed = 1.75f;
         [SerializeField, Range(0.001f, 10f)] private float _zoomSpeed = 0.27f;
-
-        #endregion
-
-        #region Fields
 
         private Vector2 _panDelta;
         private Vector3 _zoomDirection;
@@ -28,8 +24,8 @@ namespace Main.Gameplay.Cameras
 
             float deltaTime = Time.deltaTime;
 
-            PanCamera(in deltaTime);
-            ZoomCamera(in deltaTime);
+            Pan(in deltaTime);
+            Zoom(in deltaTime);
         }
 
         #endregion
@@ -51,7 +47,7 @@ namespace Main.Gameplay.Cameras
 
         #region Pan
 
-        private void PanCamera(in float deltaTime)
+        private void Pan(in float deltaTime)
         {
             transform.Translate(
                 new Vector3(_panDelta.x, 0, _panDelta.y) * _panSpeed * deltaTime, 
@@ -62,7 +58,7 @@ namespace Main.Gameplay.Cameras
 
         #region Zoom
 
-        private void ZoomCamera(in float deltaTime)
+        private void Zoom(in float deltaTime)
         {
             transform.Translate(
                 _zoomDirection * _zoomDelta * _zoomSpeed * deltaTime,

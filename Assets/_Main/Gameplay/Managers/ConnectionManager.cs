@@ -1,5 +1,5 @@
+using Main.Common.Behaviours;
 using Main.Common.Extensions;
-using Main.Gameplay.Cameras;
 using Main.Gameplay.Connections;
 using Main.Gameplay.Connectors;
 using Main.Gameplay.Players;
@@ -12,6 +12,8 @@ namespace Main.Gameplay.Managers
 {
     public class ConnectionManager : AbstractManager
     {
+        #region Fields
+
         [SerializeField] protected int _maxHitsCount = 16;
         [SerializeField] private float _maxDistance = 1000f;
         [SerializeField] private LayerMask _layersToCheck;
@@ -24,7 +26,12 @@ namespace Main.Gameplay.Managers
         private RaycastHit[] _hits;
         private ICameraProvider _cameraProvider;
         private ConnectionSpawner _connectionSpawner;
+        private ConnectorRegistry _connectorRegistry;
         private Camera Camera => _cameraProvider.GetCamera();
+
+        #endregion
+
+        #region Properties
 
         public bool IsConnecting { get; private set; }
         public bool IsMoving { get; private set; }
@@ -32,16 +39,26 @@ namespace Main.Gameplay.Managers
         public IConnectorSocket SocketB { get; private set; }
         public Connection Current { get; private set; }
 
+        #endregion
+
+        #region Events
+
         public event UnityAction<ConnectionEventArgs> onConnectionStarted;
         public event UnityAction<ConnectionEventArgs> onConnectionEnded;
-        public event UnityAction<ConnectionEventArgs> onConnectionEstablished;
+        public event UnityAction<ConnectionEstablishedEventArgs> onConnectionEstablished;
+
+        #endregion
+
+        #region Inject
 
         [Inject]
         private void Construct(
+            ConnectorRegistry connectorRegistry,
             ICameraProvider cameraProvider, 
             ConnectionSpawner connectionSpawner,
             PlayerInputHandler inputHandler)
         {
+            this._connectorRegistry = connectorRegistry;
             this._cameraProvider = cameraProvider;
             this._connectionSpawner = connectionSpawner;
             this._clickProvider = inputHandler.ClickProvider;
@@ -49,12 +66,20 @@ namespace Main.Gameplay.Managers
             this._cursorDeltaProvider = inputHandler.PanProvider;
         }
 
+        #endregion
+
+        #region Unity Methods
+
         protected override void Awake()
         {
             base.Awake();
 
             _hits = new RaycastHit[_maxHitsCount];
         }
+
+        #endregion
+
+        #region Connect
 
         public void BeginConnect(IConnectorSocket A)
         {
@@ -68,14 +93,21 @@ namespace Main.Gameplay.Managers
             Current = _connectionSpawner.Spawn();
             Current.BeginDrag(SocketA.Position);
 
+            ActivateConnectorsExceptFor(SocketA.Root);
+
             RaiseOnConnectionStarted(new ConnectionEventArgs(this, Current));
         }
+
+        #endregion
+
+        #region EndConnect
 
         public void EndConnect()
         {
             if (!IsActive || !IsConnecting)
                 return;
 
+            DeactivateConnectorsExceptFor(null);
             IsConnecting = false;
             IsMoving = false;
 
@@ -94,7 +126,7 @@ namespace Main.Gameplay.Managers
 
                     if (Current.TryConnect(SocketA, SocketB, out ConnectionFailedReason failed))
                     {
-                        RaiseOnConnectionEstablished(new ConnectionEventArgs(this, Current));
+                        RaiseOnConnectionEstablished(new ConnectionEstablishedEventArgs(this, Current));
                         Current = null;
                         return;
                     }
@@ -105,25 +137,49 @@ namespace Main.Gameplay.Managers
                 }
             }
 
-            FinalizeEndConnect();
+            Current?.Disconnect();
+            RaiseOnConnectionEnded(new ConnectionEventArgs(this, Current));
+            Current = null;
         }
 
-        private void FinalizeEndConnect()
-        {
-            IsConnecting = false;
-            IsMoving = false;
+        #endregion
 
-            if (Current != null)
+        private void ActivateConnectorsExceptFor(Transform root) =>
+            SetStateOfConnectorsExceptFor(root, PawnConnectorAnimator.ConnectorAnimatorState.ReadyToConnect);
+
+        private void DeactivateConnectorsExceptFor(Transform root) =>
+            SetStateOfConnectorsExceptFor(root, PawnConnectorAnimator.ConnectorAnimatorState.Idle);
+
+        private void SetStateOfConnectorsExceptFor(Transform root, PawnConnectorAnimator.ConnectorAnimatorState state)
+        {
+            if (root == null)
             {
-                Current.Disconnect();
-                RaiseOnConnectionEnded(new ConnectionEventArgs(this, Current));
-                Current = null;
+                foreach (var connector in _connectorRegistry.Items)
+                {
+                    if (connector == null) continue;
+                    connector.Animator.ToState(state);
+                }
+
+                return;
+            }
+
+            foreach (var connector in _connectorRegistry.Items)
+            {
+                if (connector == null) continue;
+                if (connector.Socket == null) continue;
+                if (root.Equals(connector.Socket.Root)) continue;
+
+                connector.Animator.ToState(state);
             }
         }
 
+        #region Event Raisers
+
         private void RaiseOnConnectionStarted(ConnectionEventArgs args) => onConnectionStarted?.Invoke(args);
         private void RaiseOnConnectionEnded(ConnectionEventArgs args) => onConnectionEnded?.Invoke(args);
-        private void RaiseOnConnectionEstablished(ConnectionEventArgs args) => onConnectionEstablished?.Invoke(args);
+        private void RaiseOnConnectionEstablished(ConnectionEstablishedEventArgs args) => onConnectionEstablished?.Invoke(args);
+
+        #endregion
 
         #region Subscribe
 
@@ -194,7 +250,7 @@ namespace Main.Gameplay.Managers
             if (!IsActive || !IsConnecting)
                 return;
 
-            if (SocketA.IsNullAsComponent()) 
+            if (SocketA.IsNullOrDestroyed()) 
             {
                 EndConnect();
                 return;

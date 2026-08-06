@@ -6,6 +6,6 @@ namespace Main.Gameplay.Pawns
     [Serializable]
     public struct PawnSpawnParameters
     {
-        public Vector3 Position;
+        public Vector3 position;
     }
 }

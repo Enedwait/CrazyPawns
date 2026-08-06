@@ -12,7 +12,7 @@ namespace Main.Gameplay.Connectors
     {
         public enum ConnectorAnimatorState { Idle, Active, Delete, Restore, ReadyToConnect }
 
-        #region Variables
+        #region Fields
 
         [SerializeField] private ConnectorSelectable _connectorSelectable;
         [SerializeField] private Renderer _renderer;
@@ -21,11 +21,15 @@ namespace Main.Gameplay.Connectors
         private PawnDraggable _pawnDraggable;
         private Material _originalMaterial;
 
+        #endregion
+
+        #region Properties
+
         private Material ActiveMaterial => _sceneData.CrazyPawnSettings.ActiveConnectorMaterial;
         private Material SelectedMaterial => _sceneData.Settings.SelectedMaterial;
         private Material DeleteMaterial => _sceneData.CrazyPawnSettings.DeleteMaterial;
 
-        public ConnectorAnimatorState State { get; protected set; }
+        public ConnectorAnimatorState State { get; private set; }
 
         #endregion
 
@@ -65,7 +69,7 @@ namespace Main.Gameplay.Connectors
 
         #endregion
 
-        #region State & Play
+        #region State of Play
 
         public void ToState(ConnectorAnimatorState state)
         {
@@ -82,6 +86,10 @@ namespace Main.Gameplay.Connectors
                 default: throw new NotImplementedException();
             }
         }
+
+        #endregion
+
+        #region Play
 
         private void Play(ConnectorAnimatorState state)
         {
@@ -102,7 +110,7 @@ namespace Main.Gameplay.Connectors
             _renderer.material = SelectedMaterial;
         }
 
-        private void PlayReadyToConnect()
+        protected override void PlayReadyToConnect()
         {
             State = ConnectorAnimatorState.Active;
             _renderer.material = ActiveMaterial;
@@ -161,7 +169,6 @@ namespace Main.Gameplay.Connectors
             ToState(ConnectorAnimatorState.Restore);
         }
 
-
         private void OnExitCheckerboard(PawnExitCheckerboardEventArgs args)
         {
             ToState(ConnectorAnimatorState.Delete);
@@ -199,8 +206,13 @@ namespace Main.Gameplay.Connectors
 
     public abstract class AbstractConnectorAnimator : AbstractEntityAnimator
     {
+        #region Play
+
         protected abstract void PlayActive();
+        protected abstract void PlayReadyToConnect();
         protected abstract void PlayDelete();
         protected abstract void PlayRestore();
+
+        #endregion
     }
 }

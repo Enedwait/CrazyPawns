@@ -1,26 +1,29 @@
 using Cysharp.Threading.Tasks;
 using Main.Common.Behaviours;
-using Main.Gameplay.Cameras;
 using Main.Gameplay.Connectors;
 using Main.Gameplay.Managers;
 using Main.Gameplay.Pawns;
 using System;
 using Main.Common.Classes.Objects;
-using UnityEngine;
+using Main.Gameplay.Targets;
 
 namespace Main.Gameplay.Players
 {
     public sealed class PlayerActionProcessor  : AbstractSubscriber
     {
-        private ConnectorRegistry _connectorRegistry;
+        #region Fields
+
         private SelectionManager _selectionManager;
         private PanAndZoomManager _panAndZoomManager;
         private DragManager _dragManager;
         private ConnectionManager _connectionManager;
 
+        #endregion
+
+        #region Init
+
         public PlayerActionProcessor(PlayerActionProcessorParameters parameters)
         {
-            this._connectorRegistry = parameters.ConnectorRegistry;
             this._selectionManager = parameters.SelectionManager;
             this._panAndZoomManager = parameters.PanAndZoomManager;
             this._dragManager = parameters.DragManager;
@@ -33,7 +36,7 @@ namespace Main.Gameplay.Players
 
             _panAndZoomManager.SetActive(true);
             _panAndZoomManager.SetPanAllowed(true);
-            _panAndZoomManager.SetPanAllowed(true);
+            _panAndZoomManager.SetZoomAllowed(true);
             _panAndZoomManager.SetTarget(args.PanAndZoomTarget);
 
             _dragManager.SetActive(false);
@@ -43,12 +46,18 @@ namespace Main.Gameplay.Players
             Subscribe(true);
         }
 
+        #endregion
+
+        #region Subscribe
+
         protected override void SubscribeInner(bool subscribe)
         {
             SubscribeToSelectionManager(subscribe);
             SubscribeToDragManager(subscribe);
             SubscribeToConnectionManager(subscribe);
         }
+
+        #endregion
 
         #region SelectionManager
 
@@ -89,37 +98,6 @@ namespace Main.Gameplay.Players
         {
             _connectionManager.SetActive(true);
             _connectionManager.BeginConnect(selectable.Socket);
-
-            ActivateConnectorsExceptFor(selectable.Socket.Root);
-        }
-
-        private void ActivateConnectorsExceptFor(Transform root) =>
-            SetStateOfConnectorsExceptFor(root, PawnConnectorAnimator.ConnectorAnimatorState.ReadyToConnect);
-
-        private void DeactivateConnectorsExceptFor(Transform root) =>
-            SetStateOfConnectorsExceptFor(root, PawnConnectorAnimator.ConnectorAnimatorState.Idle);
-
-        private void SetStateOfConnectorsExceptFor(Transform root, PawnConnectorAnimator.ConnectorAnimatorState state)
-        {
-            if (root == null)
-            {
-                foreach (var connector in _connectorRegistry.Items)
-                {
-                    if (connector == null) continue;
-                    connector.Animator.ToState(state);
-                }
-
-                return;
-            }
-
-            foreach (var connector in _connectorRegistry.Items)
-            {
-                if (connector == null) continue;
-                if (connector.Socket == null) continue;
-                if (root.Equals(connector.Socket.Root)) continue;
-
-                connector.Animator.ToState(state);
-            }
         }
 
         private void ProcessPawn(IPawnSelectable selectable)
@@ -203,17 +181,13 @@ namespace Main.Gameplay.Players
         private void OnConnectionEnded(ConnectionEventArgs args)
         {
             _connectionManager.SetActive(false);
-            DeactivateConnectorsExceptFor(null);
-
             _panAndZoomManager.SetPanAllowed(true);
             _selectionManager.SetActive(true);
         }
 
-        private void OnConnectionEstablished(ConnectionEventArgs args)
+        private void OnConnectionEstablished(ConnectionEstablishedEventArgs args)
         {
             _connectionManager.SetActive(false);
-            DeactivateConnectorsExceptFor(null);
-
             _panAndZoomManager.SetPanAllowed(true);
             _selectionManager.SetActive(true);
         }
@@ -222,7 +196,6 @@ namespace Main.Gameplay.Players
     }
 
     public record PlayerActionProcessorParameters(
-        ConnectorRegistry ConnectorRegistry,
         SelectionManager SelectionManager, 
         PanAndZoomManager PanAndZoomManager, 
         DragManager DragManager, 

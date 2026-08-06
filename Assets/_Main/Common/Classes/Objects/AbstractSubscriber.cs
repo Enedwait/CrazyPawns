@@ -2,25 +2,41 @@ namespace Main.Common.Classes.Objects
 {
     public abstract class AbstractSubscriber : DisposableObject
     {
-        public bool IsSubscribed { get; protected set; }
+        #region Fields
+
+        protected bool isSubscribed;
+
+        #endregion
+
+        #region Init
 
         protected AbstractSubscriber()
         { }
 
+        #endregion
+
+        #region Subscribe
+
         protected void Subscribe(bool subscribe)
         {
-            if (subscribe && IsSubscribed)
+            if (subscribe && isSubscribed)
                 SubscribeInner(false);
 
             SubscribeInner(subscribe);
-            IsSubscribed = subscribe;
+            isSubscribed = subscribe;
         }
 
         protected abstract void SubscribeInner(bool subscribe);
+
+        #endregion
+
+        #region Dispose
 
         protected override void DisposeManaged()
         {
             Subscribe(false);
         }
+
+        #endregion
     }
 }

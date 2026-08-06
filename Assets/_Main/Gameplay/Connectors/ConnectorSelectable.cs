@@ -6,16 +6,31 @@ namespace Main.Gameplay.Connectors
     [DisallowMultipleComponent]
     public class ConnectorSelectable : AbstractSelectable, IConnectorSelectable
     {
+        #region Fields
+
         [SerializeField] private ConnectorSocket _socket;
 
+        #endregion
+
+        #region Properties
+
         public IConnectorSocket Socket => _socket;
+
+        #endregion
+
+        #region Init
 
         protected override void InitComponents()
         {
             base.InitComponents();
+
             if (_socket == null)
                 _socket = GetComponent<ConnectorSocket>();
         }
+
+        #endregion
+
+        #region Select
 
         protected override bool SelectInner()
         {
@@ -27,8 +42,14 @@ namespace Main.Gameplay.Connectors
             return true;
         }
 
+        #endregion
+
+        #region Subscribe
+
         protected override void SubscribeInner(bool subscribe)
         { }
+
+        #endregion
     }
 
     public interface IConnectorSelectable : ISelectable

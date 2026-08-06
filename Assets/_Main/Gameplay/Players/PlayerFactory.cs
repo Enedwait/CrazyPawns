@@ -2,6 +2,6 @@ using Zenject;
 
 namespace Main.Gameplay.Players
 {
-    public class PlayerFactory : PlaceholderFactory<Player>
+    public sealed class PlayerFactory : PlaceholderFactory<Player>
     { }
 }

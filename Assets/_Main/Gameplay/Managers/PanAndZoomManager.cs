@@ -1,5 +1,6 @@
-using Main.Gameplay.Cameras;
+using Main.Common.Behaviours;
 using Main.Gameplay.Players;
+using Main.Gameplay.Targets;
 using Main.Infrastructure.Controls.Providers;
 using UnityEngine;
 using Zenject;
@@ -9,15 +10,25 @@ namespace Main.Gameplay.Managers
     [DisallowMultipleComponent]
     public sealed class PanAndZoomManager : AbstractManager
     {
+        #region Fields
+
         private CursorPositionProvider _cursorPositionProvider;
         private FloatDeltaProvider _zoomProvider;
         private Vector2DeltaProvider _panProvider;
         private ICameraProvider _cameraProvider;
         private PanAndZoomTarget _target;
 
+        #endregion
+
+        #region Properties
+
         private Camera Camera => _cameraProvider.GetCamera();
         public bool IsPanAllowed { get; private set; }
         public bool IsZoomAllowed { get; private set; }
+
+        #endregion
+
+        #region Inject
 
         [Inject]
         private void Construct(
@@ -30,10 +41,16 @@ namespace Main.Gameplay.Managers
             this._zoomProvider = inputHandler.ZoomProvider;
         }
 
+        #endregion
+
+        #region Methods
+
         public void SetTarget(PanAndZoomTarget target)
         {
             this._target = target;
         }
+
+        #endregion
 
         #region Subscribe
 
@@ -65,6 +82,7 @@ namespace Main.Gameplay.Managers
         private void OnZoomDelta(float zoom)
         {
             if (!IsActive) return;
+            if (!IsZoomAllowed) return;
             if (_target == null) return;
 
             Vector2 cursorScreenPosition = _cursorPositionProvider.CursorPosition;

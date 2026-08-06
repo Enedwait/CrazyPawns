@@ -9,6 +9,8 @@ namespace Main.Gameplay.Connections
 {
     public sealed class Connection : AbstractMonoBehaviourExtended, IPoolable<IMemoryPool>, IResetValues, IConnection
     {
+        #region Fields
+
         [SerializeField] private LineRenderer _lineRenderer;
         [SerializeField] private float _width = 0.07f;
 
@@ -17,17 +19,27 @@ namespace Main.Gameplay.Connections
         private IMemoryPool _pool;
         private IActiveConnectionItems _activeConnections;
 
-        public bool IsConnected { get; protected set; }
-        public IConnectorSocket SocketA { get; protected set; }
-        public IConnectorSocket SocketB { get; protected set; }
+        #endregion
 
-        
+        #region Properties
+
+        public bool IsConnected { get; private set; }
+        public IConnectorSocket SocketA { get; private set; }
+        public IConnectorSocket SocketB { get; private set; }
+
+        #endregion
+
+        #region Inject
+
         [Inject]
         private void Construct(IActiveConnectionItems activeConnections)
         {
             this._activeConnections = activeConnections;
         }
 
+        #endregion
+
+        #region Unity Methods
 
 #if UNITY_EDITOR
         protected override void OnValidate()
@@ -50,6 +62,10 @@ namespace Main.Gameplay.Connections
             ResetValues();
         }
 
+        #endregion
+
+        #region Init
+
         protected override void InitComponents()
         {
             base.InitComponents();
@@ -57,6 +73,8 @@ namespace Main.Gameplay.Connections
             if (_lineRenderer == null)
                 _lineRenderer = GetComponent<LineRenderer>();
         }
+
+        #endregion
 
         #region Drag
 
@@ -196,6 +214,8 @@ namespace Main.Gameplay.Connections
 
         #endregion
 
+        #region Comparison
+
         public bool HasBothSockets() => SocketA != null && SocketB != null;
         public bool HasOneSocket() => (SocketA != null && SocketB == null) || (SocketA == null && SocketB != null);
         public bool HasNoSockets() => SocketA == null && SocketB == null;
@@ -224,6 +244,8 @@ namespace Main.Gameplay.Connections
                    && ((SocketA.Equals(other.SocketA) && SocketB.Equals(other.SocketB))
                    || (SocketA.Equals(other.SocketB) && SocketB.Equals(other.SocketA)));
         }
+
+        #endregion
 
         #region Subscribe
 

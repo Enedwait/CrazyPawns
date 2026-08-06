@@ -1,8 +1,8 @@
+using Cysharp.Threading.Tasks;
 using Main.Common.Behaviours;
-using Main.Gameplay.Cameras;
 using Main.Gameplay.Connectors;
-using Main.Gameplay.Data;
 using Main.Gameplay.Managers;
+using Main.Gameplay.Targets;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Zenject;
@@ -25,9 +25,7 @@ namespace Main.Gameplay.Players
 
         private PlayerActionProcessor _actionProcessor;
         private PlayerInputHandler _inputHandler;
-        private SceneData _sceneData;
         private ICameraProvider _cameraProvider;
-        private ConnectorRegistry _connectorRegistry;
 
         #endregion
 
@@ -41,42 +39,40 @@ namespace Main.Gameplay.Players
 
         [Inject]
         private void Construct(
-            SceneData sceneData, 
             ICameraProvider cameraProvider,
             PlayerInputHandler inputHandler,
             ConnectorRegistry connectorRegistry)
         {
-            this._sceneData = sceneData;
             this._cameraProvider = cameraProvider;
             this._inputHandler = inputHandler;
-            this._connectorRegistry = connectorRegistry;
 
             _actionProcessor = new PlayerActionProcessor(new PlayerActionProcessorParameters(
-                _connectorRegistry, _selectionManager, _panAndZoomManager, _dragManager, _connectionManager));
+               _selectionManager, _panAndZoomManager, _dragManager, _connectionManager));
         }
 
         #endregion
 
-        #region Unity Methods
+        #region Init
 
-        protected override async void Start()
+        public async UniTask InitializeAsync(PlayerInitArgs args)
         {
-            base.Start();
-
+            _cameraProvider.SetCamera(args.Camera);
             PlayerInput.camera = _cameraProvider.GetCamera();
 
             await _actionProcessor.InitializeAsync(new PlayerActionProcessorInitArgs(
-                _sceneData.MainPanAndZoomTarget));
+                args.PanAndZoomTarget));
         }
 
         #endregion
 
         #region Subscribe
 
-        
+
         protected override void SubscribeInner(bool subscribe)
         { }
 
         #endregion
     }
+
+    public record PlayerInitArgs(Camera Camera, PanAndZoomTarget PanAndZoomTarget);
 }

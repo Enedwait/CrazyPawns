@@ -5,13 +5,38 @@ namespace Main.Common.Behaviours
 {
     public abstract class AbstractSelectable : AbstractMonoBehaviourExtended, ISelectable
     {
+        #region Fields
+
         [SerializeField] protected Transform target;
-        
+
+        #endregion
+
+        #region Properties
+
         public Transform Target => target;
         public bool IsSelected { get; protected set; }
         public bool CanSelect { get; protected set; }
 
+        #endregion
+
+        #region Events
+
         public event UnityAction<SelectedChangedEventArgs> onSelectedChanged;
+
+        #endregion
+
+        #region Unity Methods
+
+        protected override void Start()
+        {
+            base.Start();
+
+            CanSelect = true;
+        }
+
+        #endregion
+
+        #region Init
 
         protected override void InitComponents()
         {
@@ -21,20 +46,14 @@ namespace Main.Common.Behaviours
                 target = transform;
         }
 
-        protected override void Start()
-        {
-            base.Start();
+        #endregion
 
-            CanSelect = true;
-        }
+        #region Select
 
         public bool Select()
         {
-            if (!CanSelect || IsSelected)
-                return false;
-
-            if (!SelectInner()) 
-                return false;
+            if (!CanSelect || IsSelected) return false;
+            if (!SelectInner()) return false;
 
             IsSelected = true;
             RaiseOnSelectedChanged();
@@ -44,13 +63,14 @@ namespace Main.Common.Behaviours
 
         protected abstract bool SelectInner();
 
+        #endregion
+
+        #region Deselect
+
         public bool Deselect()
         {
-            if (!IsSelected)
-                return true;
-
-            if (!DeselectInner()) 
-                return false;
+            if (!IsSelected) return true;
+            if (!DeselectInner()) return false;
 
             IsSelected = false;
             RaiseOnSelectedChanged();
@@ -60,12 +80,15 @@ namespace Main.Common.Behaviours
 
         protected abstract bool DeselectInner();
 
+        #endregion
+
+        #region Event Raisers
+
         protected void RaiseOnSelectedChanged() => 
             onSelectedChanged?.Invoke(new SelectedChangedEventArgs(this, IsSelected));
+
+        #endregion
     }
-
-    public record SelectedChangedEventArgs(AbstractSelectable Selectable, bool IsSelected);
-
 
     public interface ISelectable
     {
@@ -75,4 +98,6 @@ namespace Main.Common.Behaviours
         bool Select();
         bool Deselect();
     }
+
+    public record SelectedChangedEventArgs(AbstractSelectable Selectable, bool IsSelected);
 }

@@ -2,7 +2,7 @@ using Main.Common.Behaviours;
 
 namespace Main.Gameplay.Managers
 {
-    public abstract class AbstractManager : AbstractMonoBehaviourExtended
+    public abstract class AbstractManager : AbstractMonoBehaviourExtended, IManager
     {
         #region Properties
 
@@ -20,7 +20,7 @@ namespace Main.Gameplay.Managers
 
         #endregion
 
-        #region SetActive
+        #region Methods
 
         public void SetActive(bool active)
         {
@@ -28,5 +28,12 @@ namespace Main.Gameplay.Managers
         }
 
         #endregion
+    }
+
+    public interface IManager
+    {
+        bool IsActive { get; }
+
+        void SetActive(bool active);
     }
 }

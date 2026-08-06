@@ -4,7 +4,13 @@ namespace Main.Common.Behaviours
 {
     public abstract class AbstractDraggable : AbstractMonoBehaviourExtended, IDraggable
     {
+        #region Fields
+
         [SerializeField] protected Transform target;
+
+        #endregion
+
+        #region Properties
 
         public Transform Target => target;
         public bool IsDragging { get; protected set; }
@@ -13,12 +19,20 @@ namespace Main.Common.Behaviours
             target != null ? target.position : 
             transform != null ? transform.position : Vector3.zero;
 
+        #endregion
+
+        #region Unity Methods
+
         protected override void Start()
         {
             base.Start();
 
             CanDrag = true;
         }
+
+        #endregion
+
+        #region BeginDrag
 
         public bool BeginDrag()
         {
@@ -31,6 +45,10 @@ namespace Main.Common.Behaviours
 
         protected abstract bool BeginDragInner();
 
+        #endregion
+
+        #region Drag
+
         public void Drag(Vector3 direction)
         {
             if (!CanDrag && IsDragging)
@@ -40,6 +58,10 @@ namespace Main.Common.Behaviours
         }
 
         protected abstract void DragInner(Vector3 direction);
+
+        #endregion
+
+        #region EndDrag
 
         public bool EndDrag()
         {
@@ -51,6 +73,8 @@ namespace Main.Common.Behaviours
         }
 
         protected abstract bool EndDragInner();
+
+        #endregion
     }
 
     public interface IDraggable

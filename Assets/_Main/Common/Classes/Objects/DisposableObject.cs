@@ -4,9 +4,13 @@ namespace Main.Common.Classes.Objects
 {
     public abstract class DisposableObject : IDisposable
     {
-        #region Dispose
+        #region Fields
 
         protected bool isDisposed = false;
+
+        #endregion
+
+        #region Dispose
 
         public void Dispose()
         {

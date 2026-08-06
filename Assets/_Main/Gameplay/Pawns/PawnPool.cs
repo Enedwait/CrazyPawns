@@ -5,6 +5,8 @@ namespace Main.Gameplay.Pawns
 {
     public class PawnPool : TrackedMonoPool<PawnSpawnParameters, Pawn, PawnPoolSettings>
     {
+        #region Pool Overrides
+
         protected override void OnCreated(Pawn item)
         {
             base.OnCreated(item);
@@ -31,14 +33,20 @@ namespace Main.Gameplay.Pawns
             base.Reinitialize(p1, item);
             if (item == null) return;
             item.ResetValues();
-            item.transform.position = p1.Position;
+            item.transform.position = p1.position;
         }
+
+        #endregion
     }
 
     [Serializable]
     public class PawnPoolSettings : AbstractTrackedPoolSettings
     {
+        #region Init
+
         public PawnPoolSettings(int initialCapacity) : base(initialCapacity)
         { }
+
+        #endregion
     }
 }

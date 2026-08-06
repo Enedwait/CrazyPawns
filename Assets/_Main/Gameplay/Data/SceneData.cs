@@ -1,14 +1,16 @@
 using System;
 using CrazyPawn;
-using Main.Gameplay.Cameras;
 using Main.Gameplay.Checkerboards;
 using Main.Gameplay.Pawns;
+using Main.Gameplay.Targets;
 using UnityEngine;
 
 namespace Main.Gameplay.Data
 {
     public class SceneData : MonoBehaviour
     {
+        #region Properties
+
         [field: SerializeField, Header("Scene Objects")] public Camera MainCamera { get; protected set; }
         [field: SerializeField] public PanAndZoomTarget MainPanAndZoomTarget { get; protected set; }
         [field: SerializeField] public Checkerboard Checkerboard { get; protected set; }
@@ -17,6 +19,10 @@ namespace Main.Gameplay.Data
         [field: SerializeField, Header("Debug Parameters")] public bool DoSpawnPawns { get; protected set; }
 
         public CrazyPawnSettings CrazyPawnSettings => Settings.Original;
+
+        #endregion
+
+        #region Methods
 
         public PawnSpawnerParameters GetPawnSpawnerParameters() => new PawnSpawnerParameters
         {
@@ -33,5 +39,7 @@ namespace Main.Gameplay.Data
             WhiteCellColor = CrazyPawnSettings.WhiteCellColor,
             BlackCellColor = CrazyPawnSettings.BlackCellColor,
         };
+
+        #endregion
     }
 }

@@ -1,6 +1,5 @@
 using Main.Common.Behaviours;
 using Main.Common.Extensions;
-using Main.Gameplay.Cameras;
 using Main.Gameplay.Players;
 using Main.Infrastructure.Controls.Providers;
 using UnityEngine;
@@ -12,6 +11,8 @@ namespace Main.Gameplay.Managers
     [DisallowMultipleComponent]
     public class SelectionManager : AbstractManager
     {
+        #region Fields
+
         [SerializeField] protected int _maxHitsCount = 16;
         [SerializeField] private float _maxDistance = 1000f;
         [SerializeField] private LayerMask _layersToCheck;
@@ -20,12 +21,22 @@ namespace Main.Gameplay.Managers
         private ICameraProvider _cameraProvider;
         private ClickProvider _clickProvider;
         private CursorPositionProvider _cursorPositionProvider;
-        private Camera Camera => _cameraProvider.GetCamera();
+
+        #endregion
+
+        #region Properties
 
         public ISelectable Current { get; private set; }
+        private Camera Camera => _cameraProvider.GetCamera();
+
+        #endregion
+
+        #region Events
 
         public event UnityAction<SelectedEventArgs> onSelected;
         public event UnityAction<SelectedEventArgs> onReleased;
+
+        #endregion
 
         #region Inject
 
@@ -54,12 +65,12 @@ namespace Main.Gameplay.Managers
 
         #region Select
 
-        public bool Select(AbstractSelectable selectable)
+        public bool Select(ISelectable selectable)
         {
             if (!IsActive)
                 return false;
 
-            if (selectable == null)
+            if (selectable.IsNullOrDestroyed())
                 return false;
 
             if (!Deselect(Current))
@@ -75,6 +86,10 @@ namespace Main.Gameplay.Managers
             return true;
         }
 
+        #endregion
+
+        #region Deselect
+
         public bool Deselect(ISelectable selectable)
         {
             if (!IsActive)
@@ -82,14 +97,23 @@ namespace Main.Gameplay.Managers
 
             if (selectable == null)
                 return true;
-            
+
             if (!selectable.Deselect())
                 return false;
 
-            SubscribeToSelectable(selectable, false);
-            RaiseOnReleased(selectable);
+            FinalizeDeselect(selectable);
             return true;
         }
+
+        protected void FinalizeDeselect(ISelectable selectable)
+        {
+            SubscribeToSelectable(selectable, false);
+            RaiseOnReleased(selectable);
+        }
+
+        #endregion
+
+        #region Selectable
 
         private void SubscribeToSelectable(ISelectable selectable, bool subscribe)
         {
@@ -114,9 +138,7 @@ namespace Main.Gameplay.Managers
             if (args.IsSelected)
             { }
             else
-            {
                 Deselect(args.Selectable);
-            }
         }
 
         #endregion
@@ -141,12 +163,10 @@ namespace Main.Gameplay.Managers
             if (subscribe)
             {
                 _clickProvider.onClickPerformed += OnClick;
-                _clickProvider.onClickCanceled += OnClickCanceled;
             }
             else
             {
                 _clickProvider.onClickPerformed -= OnClick;
-                _clickProvider.onClickCanceled -= OnClickCanceled;
             }
         }
 
@@ -172,9 +192,6 @@ namespace Main.Gameplay.Managers
 
             Deselect(Current);
         }
-
-        private void OnClickCanceled()
-        { }
 
         #endregion
     }

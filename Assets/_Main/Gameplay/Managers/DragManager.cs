@@ -1,6 +1,5 @@
 using Main.Common.Behaviours;
 using Main.Common.Extensions;
-using Main.Gameplay.Cameras;
 using Main.Gameplay.Players;
 using Main.Infrastructure.Controls.Providers;
 using UnityEngine;
@@ -12,17 +11,32 @@ namespace Main.Gameplay.Managers
     [DisallowMultipleComponent]
     public sealed class DragManager : AbstractManager
     {
+        #region Fields
+
         private ClickProvider _clickProvider;
         private Vector2DeltaProvider _cursorDeltaProvider;
         private CursorPositionProvider _cursorPositionProvider;
         private ICameraProvider _cameraProvider;
+
+        #endregion
+
+        #region Properties
+
         private Camera Camera => _cameraProvider.GetCamera();
-        
+
         public bool IsDragging { get; private set; }
         public IDraggable Current { get; private set; }
 
+        #endregion
+
+        #region Events
+
         public event UnityAction<DragStartedEventArgs> onDragStarted;
         public event UnityAction<DragEndedEventArgs> onDragCompleted;
+
+        #endregion
+
+        #region Inject
 
         [Inject]
         private void Construct(
@@ -35,12 +49,16 @@ namespace Main.Gameplay.Managers
             this._cursorDeltaProvider = inputHandler.CursorDeltaProvider;
         }
 
+        #endregion
+
+        #region BeginDrag
+
         public bool BeginDrag(IDraggable draggable)
         {
             if (!IsActive)
                 return false;
 
-            if (draggable == null)
+            if (draggable.IsNullOrDestroyed())
                 return false;
 
             if (!draggable.BeginDrag())
@@ -52,6 +70,10 @@ namespace Main.Gameplay.Managers
             RaiseOnDragStarted(draggable);
             return true;
         }
+
+        #endregion
+
+        #region EndDrag
 
         public bool EndDrag()
         {
@@ -65,12 +87,19 @@ namespace Main.Gameplay.Managers
             if (!draggable.EndDrag())
                 return false;
 
+            FinalizeEndDrag(draggable);
+            return true;
+        }
+
+        private void FinalizeEndDrag(IDraggable draggable)
+        {
             IsDragging = false;
             Current = null;
 
             RaiseOnDragCompleted(draggable);
-            return true;
         }
+
+        #endregion
 
         #region Event Raisers
 
@@ -101,18 +130,13 @@ namespace Main.Gameplay.Managers
 
             if (subscribe)
             {
-                _clickProvider.onClickPerformed += OnClick;
                 _clickProvider.onClickCanceled += OnClickCanceled;
             }
             else
             {
-                _clickProvider.onClickPerformed -= OnClick;
                 _clickProvider.onClickCanceled -= OnClickCanceled;
             }
         }
-
-        private void OnClick()
-        { }
 
         private void OnClickCanceled()
         {
@@ -143,7 +167,7 @@ namespace Main.Gameplay.Managers
             if (!IsActive || !IsDragging)
                 return;
 
-            if (Current.IsNullAsComponent())
+            if (Current.IsNullOrDestroyed())
             {
                 EndDrag();
                 return;

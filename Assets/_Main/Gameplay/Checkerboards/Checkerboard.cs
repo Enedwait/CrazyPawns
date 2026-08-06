@@ -5,16 +5,26 @@ using UnityEngine;
 namespace Main.Gameplay.Checkerboards
 {
     [RequireComponent(typeof(MeshRenderer))]
-    public sealed class Checkerboard : MonoBehaviour
+    public sealed class Checkerboard : MonoBehaviour, ICheckerboard
     {
+        #region Fields
+
         private MeshRenderer _renderer;
         private Collider _collider;
+
+        #endregion
+
+        #region Unity Methods
 
         private void Awake()
         {
             if (_renderer == null) _renderer = GetComponent<MeshRenderer>();
             if (_collider == null) _collider = GetComponent<Collider>();
         }
+
+        #endregion
+
+        #region Init
 
         public async UniTask InitializeAsync(CheckerboardInitParameters parameters)
         {
@@ -36,7 +46,18 @@ namespace Main.Gameplay.Checkerboards
             checkerMaterial.SetColor("_CellColorB", parameters.BlackCellColor);
         }
 
+        #endregion
+
+        #region Methods
+
         public bool IsInside(Vector3 point) => 
             _collider.IsInside(point);
+
+        #endregion
+    }
+
+    public interface ICheckerboard
+    {
+        bool IsInside(Vector3 point);
     }
 }
