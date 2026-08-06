@@ -18,3 +18,4 @@ MonoBehaviour:
     type: 2}
   <CellSize>k__BackingField: 1.5
   <InitialConnectionCount>k__BackingField: 64
+  <ConnectionWidth>k__BackingField: 0.07

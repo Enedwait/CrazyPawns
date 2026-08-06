@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using Main.Common.Extensions;
+using System;
 using UnityEngine;
 
 namespace Main.Gameplay.Checkerboards
@@ -26,24 +27,28 @@ namespace Main.Gameplay.Checkerboards
 
         #region Init
 
-        public async UniTask InitializeAsync(CheckerboardInitParameters parameters)
+        public async UniTask InitializeAsync(CheckerboardInitArgs args)
         {
             // здесь мог бы быть истинно асинхронный метод, но есть такой без await - просто в качестве примера,
             // потому что в рамках задачи и разработанного решения для других асинхронных методов места не нашлось :-(
 
-            if (parameters.boardSize < 1)
-                parameters.boardSize = 1;
+            float boardSize = args.BoardSize;
+            if (boardSize < 1) boardSize = 1;
 
-            float finalSize = parameters.boardSize * parameters.cellSize;
+            float cellSize = args.CellSize;
+            if (cellSize < 0.1f)
+                cellSize = 0.1f;
+
+            float finalSize = boardSize * cellSize;
 
             transform.localScale = new Vector3(finalSize, finalSize, 1);
 
             Material checkerMaterial = _renderer.material;
 
-            checkerMaterial.SetFloat("_CellCountPerRow", parameters.boardSize);
-            checkerMaterial.SetFloat("_CellCountPerColumn", parameters.boardSize);
-            checkerMaterial.SetColor("_CellColorA", parameters.WhiteCellColor);
-            checkerMaterial.SetColor("_CellColorB", parameters.BlackCellColor);
+            checkerMaterial.SetFloat("_CellCountPerRow", boardSize);
+            checkerMaterial.SetFloat("_CellCountPerColumn", boardSize);
+            checkerMaterial.SetColor("_CellColorA", args.WhiteCellColor);
+            checkerMaterial.SetColor("_CellColorB", args.BlackCellColor);
         }
 
         #endregion
@@ -58,6 +63,10 @@ namespace Main.Gameplay.Checkerboards
 
     public interface ICheckerboard
     {
+        UniTask InitializeAsync(CheckerboardInitArgs args);
+
         bool IsInside(Vector3 point);
     }
+
+    public record CheckerboardInitArgs(int BoardSize, float CellSize, Color WhiteCellColor, Color BlackCellColor);
 }

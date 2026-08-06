@@ -1,3 +1,5 @@
+using System;
+using Unity.Mathematics;
 using UnityEngine;
 using Random = Unity.Mathematics.Random;
 
@@ -49,9 +51,28 @@ namespace Main.Gameplay.Pawns
             pawn.OnSpawned(_pool);
         }
 
-        private Vector3 GetRandomPosition(float radius) =>
-            new Vector3(_random.NextFloat(-radius, radius), 0, _random.NextFloat(-radius, radius));
+        private Vector3 GetRandomPosition(float radius)
+        {
+            float distance = math.sqrt(_random.NextFloat());
+            float2 direction = _random.NextFloat2Direction() * distance * radius;
+            return new Vector3(direction.x, 0, direction.y);
+        }
 
         #endregion
+    }
+
+    [Serializable]
+    public struct PawnSpawnerParameters
+    {
+        public int pawnCount;
+        public float spawnRadius;
+        public uint seed;
+        public bool doSpawnPawns;
+    }
+
+    [Serializable]
+    public struct PawnSpawnParameters
+    {
+        public Vector3 position;
     }
 }

@@ -2,6 +2,7 @@ using System;
 using Main.Common.Behaviours;
 using Main.Common.Interfaces;
 using Main.Gameplay.Connectors;
+using Main.Gameplay.Data;
 using UnityEngine;
 using Zenject;
 
@@ -18,6 +19,7 @@ namespace Main.Gameplay.Connections
         private bool _isDespawned = false;
         private IMemoryPool _pool;
         private IActiveConnectionItems _activeConnections;
+        private SceneData _sceneData;
 
         #endregion
 
@@ -32,8 +34,11 @@ namespace Main.Gameplay.Connections
         #region Inject
 
         [Inject]
-        private void Construct(IActiveConnectionItems activeConnections)
+        private void Construct(
+            SceneData sceneData,
+            IActiveConnectionItems activeConnections)
         {
+            this._sceneData = sceneData;
             this._activeConnections = activeConnections;
         }
 
@@ -46,8 +51,8 @@ namespace Main.Gameplay.Connections
         {
             base.OnValidate();
 
-            _lineRenderer.startWidth = _width;
-            _lineRenderer.endWidth = _width;
+            _lineRenderer.useWorldSpace = true;
+            SetWidth(_width);
         }
 #endif
 
@@ -55,9 +60,11 @@ namespace Main.Gameplay.Connections
         {
             base.Awake();
 
+            if (_sceneData != null)
+                _width = _sceneData.Settings.ConnectionWidth;
+            
             _lineRenderer.useWorldSpace = true;
-            _lineRenderer.startWidth = _width;
-            _lineRenderer.endWidth = _width;
+            SetWidth(_width);
 
             ResetValues();
         }
@@ -200,6 +207,16 @@ namespace Main.Gameplay.Connections
         }
 
         #endregion
+
+        public void SetWidth(float width)
+        {
+            if (width < 0.01f)
+                width = 0.01f;
+
+            _width = width;
+            _lineRenderer.startWidth = _width;
+            _lineRenderer.endWidth = _width;
+        }
 
         #region ResetValues
 

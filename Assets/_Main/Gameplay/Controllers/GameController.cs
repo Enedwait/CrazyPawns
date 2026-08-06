@@ -40,18 +40,18 @@ namespace Main.Gameplay.Controllers
         protected async void Start()
         {
             Debug.Log($"Инициализация доски...");
-            await _sceneData.Checkerboard.InitializeAsync(_sceneData.GetCheckerboardInitParameters());
+            await _sceneData.Checkerboard.InitializeAsync(_sceneData.GetCheckerboardInitArgs());
 
             Debug.Log($"Инициализация пешек...");
             _pawnSpawner.SpawnAllAsync();
 
             Debug.Log($"Инициализация игрока...");
-            await _playerSpawner.SpawnPlayer().InitializeAsync(
-                new PlayerInitArgs(_sceneData.MainCamera, _sceneData.MainPanAndZoomTarget));
+            Player player = _playerSpawner.SpawnPlayer();
+            await player.InitializeAsync(_sceneData.GetPlayerInitArgs());
 
             _connectionUpdateManager.SetActive(true);
 
-            Debug.Log($"Игра начата.");
+            Debug.Log($"Игра начата!");
         }
 
         #endregion
