@@ -3,7 +3,7 @@ using Main.Common.Extensions;
 
 namespace Main.Common.Classes.Registries
 {
-    public class Registry<T>
+    public class Registry<T> : IRegistry<T>
     {
         #region Fields
 
@@ -44,5 +44,13 @@ namespace Main.Common.Classes.Registries
         }
 
         #endregion
+    }
+
+    public interface IRegistry<T>
+    {
+        IReadOnlyCollection<T> Items { get; }
+
+        void Register(T instance);
+        void Unregister(T instance);
     }
 }

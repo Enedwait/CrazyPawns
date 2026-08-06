@@ -1,10 +1,11 @@
+using Main.Common.Interfaces;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 namespace Main.Infrastructure.Controls.Providers
 {
-    public sealed class ClickProvider : AbstractInputProvider
+    public sealed class ClickProvider : AbstractInputProvider, IClickProvider
     {
         #region Fields
 
@@ -82,4 +83,8 @@ namespace Main.Infrastructure.Controls.Providers
 
         #endregion
     }
+
+    
+
+    
 }

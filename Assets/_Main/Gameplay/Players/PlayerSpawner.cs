@@ -1,6 +1,6 @@
 namespace Main.Gameplay.Players
 {
-    public sealed class PlayerSpawner
+    public sealed class PlayerSpawner : IPlayerSpawner
     {
         #region Fields
 
@@ -27,5 +27,10 @@ namespace Main.Gameplay.Players
         }
 
         #endregion
+    }
+
+    public interface IPlayerSpawner
+    {
+        Player SpawnPlayer();
     }
 }

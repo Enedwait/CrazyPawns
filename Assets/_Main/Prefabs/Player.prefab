@@ -182,7 +182,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _useScreenCenter: 1
-  _initialPosition: {x: 172, y: 649.5}
+  _initialPosition: {x: 415, y: 233.5}
   _positionActionReference: {fileID: -5318980608019895140, guid: b4fe038ffde1cb842babd1a8e70f2811,
     type: 3}
 --- !u!1 &7067567395283175829
@@ -460,6 +460,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef16c7157951f4c4ca951d112c7cdbc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _smoothTime: 0.13
 --- !u!114 &6292045119410477081
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 
 namespace Main.Infrastructure.Controls.Providers
 {
-    public sealed class CursorPositionProvider : AbstractInputProvider
+    public sealed class CursorPositionProvider : AbstractInputProvider, ICursorPositionProvider
     {
         #region Fields
 

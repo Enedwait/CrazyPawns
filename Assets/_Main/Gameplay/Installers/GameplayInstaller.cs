@@ -3,7 +3,7 @@ using Main.Gameplay.Pawns;
 using Main.Gameplay.Players;
 using Main.Gameplay.Connections;
 using Main.Gameplay.Connectors;
-using Main.Gameplay.Managers;
+using Main.Gameplay.Managers.ConnectionUpdate;
 using UnityEngine;
 using Zenject;
 
@@ -84,7 +84,7 @@ namespace Main.Gameplay.Installers
 
         private void InstallConnectors()
         {
-            Container.Bind<ConnectorRegistry>()
+            Container.BindInterfacesAndSelfTo<ConnectorRegistry>()
                 .FromInstance(new ConnectorRegistry(_sceneData.CrazyPawnSettings.InitialPawnCount * 5))
                 .AsSingle()
                 .NonLazy();

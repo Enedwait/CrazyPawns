@@ -1,21 +1,29 @@
+using System;
+using Cysharp.Threading.Tasks;
 using Main.Common.Behaviours;
 using Main.Common.Extensions;
 using Main.Gameplay.Players;
 using Main.Infrastructure.Controls.Providers;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.Events;
 using Zenject;
 
-namespace Main.Gameplay.Managers
+namespace Main.Gameplay.Managers.Drag
 {
     [DisallowMultipleComponent]
-    public sealed class DragManager : AbstractManager
+    public sealed class DragManager : AbstractManager, IDragManager
     {
         #region Fields
 
-        private ClickProvider _clickProvider;
-        private Vector2DeltaProvider _cursorDeltaProvider;
-        private CursorPositionProvider _cursorPositionProvider;
+        [SerializeField] private float _smoothTime = 0.15f;
+
+        private CancellationTokenSource _cts;
+        private Vector3 _targetPosition;
+
+        private IClickProvider _clickProvider;
+        private IVector2DeltaProvider _cursorDeltaProvider;
+        private ICursorPositionProvider _cursorPositionProvider;
         private ICameraProvider _cameraProvider;
 
         #endregion
@@ -96,6 +104,13 @@ namespace Main.Gameplay.Managers
             IsDragging = false;
             Current = null;
 
+            if (_cts != null)
+            {
+                _cts.Cancel();
+                _cts.Dispose();
+                _cts = null;
+            }
+
             RaiseOnDragCompleted(draggable);
         }
 
@@ -173,15 +188,39 @@ namespace Main.Gameplay.Managers
                 return;
             }
 
-            Vector3 worldPosition = _cursorPositionProvider.GetWorldPositionWithY(Camera, 0f);
-            Vector3 direction = (worldPosition - Current.Position);
+            _targetPosition = _cursorPositionProvider.GetWorldPositionWithY(Camera, 0f);
 
-            Current.Drag(direction);
+            if (_cts == null)
+            {
+                _cts = new CancellationTokenSource();
+                SmoothFollowAsync(Current, _smoothTime, _cts.Token).Forget();
+            }
+        }
+
+        private async UniTaskVoid SmoothFollowAsync(
+            IDraggable draggable, 
+            float smoothTime = 0.15f, 
+            CancellationToken token = default)
+        {
+            Vector3 velocity = Vector3.zero;
+            Vector3 currentPosition = draggable.Position;
+
+            while (!token.IsCancellationRequested)
+            {
+                currentPosition = Vector3.SmoothDamp(
+                    currentPosition,
+                    _targetPosition,
+                    ref velocity,
+                    smoothTime,
+                    Mathf.Infinity,
+                    Time.deltaTime);
+
+                Current.Drag(currentPosition - draggable.Position);
+
+                await UniTask.Yield(PlayerLoopTiming.Update, token);
+            }
         }
 
         #endregion
     }
-
-    public record DragStartedEventArgs(DragManager DragManager, IDraggable Draggable);
-    public record DragEndedEventArgs(DragManager DragManager, IDraggable Draggable);
 }

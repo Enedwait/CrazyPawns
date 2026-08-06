@@ -2,7 +2,7 @@ using Zenject;
 
 namespace Main.Gameplay.Connections
 {
-    public class ConnectionSpawner : IInitializable
+    public class ConnectionSpawner : IInitializable, IConnectionSpawner
     {
         #region Fields
 
@@ -32,5 +32,10 @@ namespace Main.Gameplay.Connections
         }
 
         #endregion
+    }
+
+    public interface IConnectionSpawner
+    {
+        Connection Spawn();
     }
 }

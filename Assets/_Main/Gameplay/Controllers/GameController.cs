@@ -1,5 +1,5 @@
 using Main.Gameplay.Data;
-using Main.Gameplay.Managers;
+using Main.Gameplay.Managers.ConnectionUpdate;
 using Main.Gameplay.Pawns;
 using Main.Gameplay.Players;
 using UnityEngine;
@@ -12,9 +12,9 @@ namespace Main.Gameplay.Controllers
         #region Fields
 
         private SceneData _sceneData;
-        private PlayerSpawner _playerSpawner;
-        private PawnSpawner _pawnSpawner;
-        private ConnectionUpdateManager _connectionUpdateManager;
+        private IPlayerSpawner _playerSpawner;
+        private IPawnSpawner _pawnSpawner;
+        private IConnectionUpdateManager _connectionUpdateManager;
 
         #endregion
 
@@ -23,9 +23,9 @@ namespace Main.Gameplay.Controllers
         [Inject]
         private void Construct(
             SceneData sceneData, 
-            PlayerSpawner playerSpawner,
-            PawnSpawner pawnSpawner,
-            ConnectionUpdateManager connectionUpdateManager)
+            IPlayerSpawner playerSpawner,
+            IPawnSpawner pawnSpawner,
+            IConnectionUpdateManager connectionUpdateManager)
         {
             this._sceneData = sceneData;
             this._playerSpawner = playerSpawner;
@@ -43,7 +43,7 @@ namespace Main.Gameplay.Controllers
             await _sceneData.Checkerboard.InitializeAsync(_sceneData.GetCheckerboardInitArgs());
 
             Debug.Log($"Инициализация пешек...");
-            _pawnSpawner.SpawnAllAsync();
+            _pawnSpawner.SpawnAll();
 
             Debug.Log($"Инициализация игрока...");
             Player player = _playerSpawner.SpawnPlayer();

@@ -5,18 +5,18 @@ using Main.Infrastructure.Controls.Providers;
 using UnityEngine;
 using Zenject;
 
-namespace Main.Gameplay.Managers
+namespace Main.Gameplay.Managers.PanAndZoom
 {
     [DisallowMultipleComponent]
-    public sealed class PanAndZoomManager : AbstractManager
+    public sealed class PanAndZoomManager : AbstractManager, IPanAndZoomManager
     {
         #region Fields
 
-        private CursorPositionProvider _cursorPositionProvider;
-        private FloatDeltaProvider _zoomProvider;
-        private Vector2DeltaProvider _panProvider;
-        private ICameraProvider _cameraProvider;
         private PanAndZoomTarget _target;
+        private ICursorPositionProvider _cursorPositionProvider;
+        private IFloatDeltaProvider _zoomProvider;
+        private IVector2DeltaProvider _panProvider;
+        private ICameraProvider _cameraProvider;
 
         #endregion
 

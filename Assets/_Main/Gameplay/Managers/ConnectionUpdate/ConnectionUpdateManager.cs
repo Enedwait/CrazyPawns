@@ -2,9 +2,9 @@ using Main.Common.Classes.Objects;
 using Main.Gameplay.Connections;
 using Zenject;
 
-namespace Main.Gameplay.Managers
+namespace Main.Gameplay.Managers.ConnectionUpdate
 {
-    public class ConnectionUpdateManager : DisposableObject, IManager, ITickable
+    public class ConnectionUpdateManager : DisposableObject, IConnectionUpdateManager, ITickable
     {
         #region Fields
 

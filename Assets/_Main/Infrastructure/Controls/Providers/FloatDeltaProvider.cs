@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 
 namespace Main.Infrastructure.Controls.Providers
 {
-    public sealed class FloatDeltaProvider : AbstractInputProvider
+    public sealed class FloatDeltaProvider : AbstractInputProvider, IFloatDeltaProvider
     {
         #region Fields
 
@@ -42,7 +42,7 @@ namespace Main.Infrastructure.Controls.Providers
         #region Methods
 
 
-        private void RaiseOnZoom() => 
+        private void RaiseOnDelta() => 
             onDelta?.Invoke(Delta);
 
         public override void ResetValues() =>
@@ -72,13 +72,13 @@ namespace Main.Infrastructure.Controls.Providers
         private void OnDeltaPerformed(InputAction.CallbackContext context)
         {
             Delta = _deltaAction.ReadValue<float>();
-            RaiseOnZoom();
+            RaiseOnDelta();
         }
 
         private void OnDeltaCanceled(InputAction.CallbackContext context)
         {
             ResetValues();
-            RaiseOnZoom();
+            RaiseOnDelta();
         }
         
         #endregion

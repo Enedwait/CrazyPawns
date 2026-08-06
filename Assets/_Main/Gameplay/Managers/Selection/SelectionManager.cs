@@ -6,10 +6,10 @@ using UnityEngine;
 using UnityEngine.Events;
 using Zenject;
 
-namespace Main.Gameplay.Managers
+namespace Main.Gameplay.Managers.Selection
 {
     [DisallowMultipleComponent]
-    public class SelectionManager : AbstractManager
+    public class SelectionManager : AbstractManager, ISelectionManager
     {
         #region Fields
 
@@ -19,8 +19,8 @@ namespace Main.Gameplay.Managers
 
         private RaycastHit[] _hits;
         private ICameraProvider _cameraProvider;
-        private ClickProvider _clickProvider;
-        private CursorPositionProvider _cursorPositionProvider;
+        private IClickProvider _clickProvider;
+        private ICursorPositionProvider _cursorPositionProvider;
 
         #endregion
 
@@ -34,7 +34,7 @@ namespace Main.Gameplay.Managers
         #region Events
 
         public event UnityAction<SelectedEventArgs> onSelected;
-        public event UnityAction<SelectedEventArgs> onReleased;
+        public event UnityAction<DeselectedEventArgs> onDeselected;
 
         #endregion
 
@@ -108,7 +108,7 @@ namespace Main.Gameplay.Managers
         protected void FinalizeDeselect(ISelectable selectable)
         {
             SubscribeToSelectable(selectable, false);
-            RaiseOnReleased(selectable);
+            RaiseOnDeselected(selectable);
         }
 
         #endregion
@@ -148,8 +148,8 @@ namespace Main.Gameplay.Managers
         private void RaiseOnSelected(ISelectable selectable) => 
             onSelected?.Invoke(new SelectedEventArgs(this, selectable));
 
-        private void RaiseOnReleased(ISelectable selectable) => 
-            onReleased?.Invoke(new SelectedEventArgs(this, selectable));
+        private void RaiseOnDeselected(ISelectable selectable) => 
+            onDeselected?.Invoke(new DeselectedEventArgs(this, selectable));
 
         #endregion
 
@@ -195,6 +195,4 @@ namespace Main.Gameplay.Managers
 
         #endregion
     }
-
-    public record SelectedEventArgs(SelectionManager Manager, ISelectable Selectable);
 }

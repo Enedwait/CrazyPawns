@@ -1,10 +1,13 @@
 using Cysharp.Threading.Tasks;
 using Main.Common.Behaviours;
 using Main.Gameplay.Connectors;
-using Main.Gameplay.Managers;
 using Main.Gameplay.Pawns;
 using System;
 using Main.Common.Classes.Objects;
+using Main.Gameplay.Managers.Connection;
+using Main.Gameplay.Managers.Drag;
+using Main.Gameplay.Managers.PanAndZoom;
+using Main.Gameplay.Managers.Selection;
 using Main.Gameplay.Targets;
 
 namespace Main.Gameplay.Players
@@ -13,10 +16,10 @@ namespace Main.Gameplay.Players
     {
         #region Fields
 
-        private SelectionManager _selectionManager;
-        private PanAndZoomManager _panAndZoomManager;
-        private DragManager _dragManager;
-        private ConnectionManager _connectionManager;
+        private ISelectionManager _selectionManager;
+        private IPanAndZoomManager _panAndZoomManager;
+        private IDragManager _dragManager;
+        private IConnectionManager _connectionManager;
 
         #endregion
 
@@ -32,6 +35,8 @@ namespace Main.Gameplay.Players
 
         public async UniTask InitializeAsync(PlayerActionProcessorInitArgs args)
         {
+            // предполагается, что IRL будет асинхронно - ради примера
+
             _selectionManager.SetActive(true);
 
             _panAndZoomManager.SetActive(true);
@@ -69,12 +74,12 @@ namespace Main.Gameplay.Players
             if (subscribe)
             {
                 _selectionManager.onSelected += OnSelected;
-                _selectionManager.onReleased += OnReleased;
+                _selectionManager.onDeselected += OnDeselected;
             }
             else
             {
                 _selectionManager.onSelected -= OnSelected;
-                _selectionManager.onReleased -= OnReleased;
+                _selectionManager.onDeselected -= OnDeselected;
             }
         }
 
@@ -110,7 +115,7 @@ namespace Main.Gameplay.Players
             }
         }
 
-        private void OnReleased(SelectedEventArgs args)
+        private void OnDeselected(DeselectedEventArgs args)
         { }
 
         #endregion
@@ -172,13 +177,13 @@ namespace Main.Gameplay.Players
             }
         }
 
-        private void OnConnectionStarted(ConnectionEventArgs args)
+        private void OnConnectionStarted(ConnectionStartedEventArgs args)
         {
             _panAndZoomManager.SetPanAllowed(false);
             _selectionManager.SetActive(false);
         }
 
-        private void OnConnectionEnded(ConnectionEventArgs args)
+        private void OnConnectionEnded(ConnectionEndedEventArgs args)
         {
             _connectionManager.SetActive(false);
             _panAndZoomManager.SetPanAllowed(true);
@@ -196,10 +201,10 @@ namespace Main.Gameplay.Players
     }
 
     public record PlayerActionProcessorParameters(
-        SelectionManager SelectionManager, 
-        PanAndZoomManager PanAndZoomManager, 
-        DragManager DragManager, 
-        ConnectionManager ConnectionManager);
+        ISelectionManager SelectionManager, 
+        IPanAndZoomManager PanAndZoomManager, 
+        IDragManager DragManager, 
+        IConnectionManager ConnectionManager);
 
     public record PlayerActionProcessorInitArgs(PanAndZoomTarget PanAndZoomTarget);
 }

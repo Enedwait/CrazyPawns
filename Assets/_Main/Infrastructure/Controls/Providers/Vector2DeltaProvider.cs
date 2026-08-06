@@ -1,11 +1,10 @@
-using Main.Common.Behaviours;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 namespace Main.Infrastructure.Controls.Providers
 {
-    public sealed class Vector2DeltaProvider : AbstractInputProvider
+    public sealed class Vector2DeltaProvider : AbstractInputProvider, IVector2DeltaProvider
     {
         #region Fields
 
@@ -84,8 +83,5 @@ namespace Main.Infrastructure.Controls.Providers
         #endregion
     }
 
-    public abstract class AbstractInputProvider : AbstractMonoBehaviourExtended
-    {
-        public abstract void ResetValues();
-    }
+    
 }

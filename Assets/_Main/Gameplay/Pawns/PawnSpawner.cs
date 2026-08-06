@@ -5,7 +5,7 @@ using Random = Unity.Mathematics.Random;
 
 namespace Main.Gameplay.Pawns
 {
-    public sealed class PawnSpawner
+    public sealed class PawnSpawner : IPawnSpawner
     {
         #region Fields
 
@@ -30,7 +30,7 @@ namespace Main.Gameplay.Pawns
 
         #region Spawn
 
-        public void SpawnAllAsync()
+        public void SpawnAll()
         {
             _random = new Random(_parameters.seed);
             if (_parameters.doSpawnPawns)
@@ -40,7 +40,7 @@ namespace Main.Gameplay.Pawns
             }
         }
 
-        private void SpawnOne(PawnSpawnerParameters parameters)
+        public Pawn SpawnOne(PawnSpawnerParameters parameters)
         {
             PawnSpawnParameters pawnSpawnParameters = new PawnSpawnParameters
             {
@@ -49,6 +49,7 @@ namespace Main.Gameplay.Pawns
 
             Pawn pawn = _pool.Spawn(pawnSpawnParameters);
             pawn.OnSpawned(_pool);
+            return pawn;
         }
 
         private Vector3 GetRandomPosition(float radius)
@@ -59,6 +60,12 @@ namespace Main.Gameplay.Pawns
         }
 
         #endregion
+    }
+
+    public interface IPawnSpawner
+    {
+        void SpawnAll();
+        Pawn SpawnOne(PawnSpawnerParameters parameters);
     }
 
     [Serializable]

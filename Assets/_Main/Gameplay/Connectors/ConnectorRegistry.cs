@@ -2,7 +2,7 @@ using Main.Common.Classes.Registries;
 
 namespace Main.Gameplay.Connectors
 {
-    public class ConnectorRegistry : Registry<Connector>
+    public class ConnectorRegistry : Registry<Connector>, IConnectorRegistry
     {
         #region Init
 
@@ -11,4 +11,7 @@ namespace Main.Gameplay.Connectors
 
         #endregion
     }
+
+    public interface IConnectorRegistry : IRegistry<Connector>
+    { }
 }

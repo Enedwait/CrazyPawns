@@ -8,9 +8,9 @@ using UnityEngine;
 using UnityEngine.Events;
 using Zenject;
 
-namespace Main.Gameplay.Managers
+namespace Main.Gameplay.Managers.Connection
 {
-    public class ConnectionManager : AbstractManager
+    public class ConnectionManager : AbstractManager, IConnectionManager
     {
         #region Fields
 
@@ -18,33 +18,34 @@ namespace Main.Gameplay.Managers
         [SerializeField] private float _maxDistance = 1000f;
         [SerializeField] private LayerMask _layersToCheck;
 
-        private ClickProvider _clickProvider;
-        private Vector2DeltaProvider _cursorDeltaProvider;
-        private CursorPositionProvider _cursorPositionProvider;
-
         private bool isFirstClick = true;
         private RaycastHit[] _hits;
+
+        private IClickProvider _clickProvider;
+        private IVector2DeltaProvider _cursorDeltaProvider;
+        private ICursorPositionProvider _cursorPositionProvider;
         private ICameraProvider _cameraProvider;
-        private ConnectionSpawner _connectionSpawner;
-        private ConnectorRegistry _connectorRegistry;
-        private Camera Camera => _cameraProvider.GetCamera();
+        private IConnectionSpawner _connectionSpawner;
+        private IConnectorRegistry _connectorRegistry;
 
         #endregion
 
         #region Properties
 
+        private Camera Camera => _cameraProvider.GetCamera();
+
         public bool IsConnecting { get; private set; }
         public bool IsMoving { get; private set; }
         public IConnectorSocket SocketA { get; private set; }
         public IConnectorSocket SocketB { get; private set; }
-        public Connection Current { get; private set; }
+        public Connections.Connection Current { get; private set; }
 
         #endregion
 
         #region Events
 
-        public event UnityAction<ConnectionEventArgs> onConnectionStarted;
-        public event UnityAction<ConnectionEventArgs> onConnectionEnded;
+        public event UnityAction<ConnectionStartedEventArgs> onConnectionStarted;
+        public event UnityAction<ConnectionEndedEventArgs> onConnectionEnded;
         public event UnityAction<ConnectionEstablishedEventArgs> onConnectionEstablished;
 
         #endregion
@@ -53,9 +54,9 @@ namespace Main.Gameplay.Managers
 
         [Inject]
         private void Construct(
-            ConnectorRegistry connectorRegistry,
+            IConnectorRegistry connectorRegistry,
             ICameraProvider cameraProvider, 
-            ConnectionSpawner connectionSpawner,
+            IConnectionSpawner connectionSpawner,
             PlayerInputHandler inputHandler)
         {
             this._connectorRegistry = connectorRegistry;
@@ -81,13 +82,13 @@ namespace Main.Gameplay.Managers
 
         #region Connect
 
-        public void BeginConnect(IConnectorSocket A)
+        public void BeginConnect(IConnectorSocket from)
         {
-            if (!IsActive || A == null)
+            if (!IsActive || from == null)
                 return;
 
             isFirstClick = true;
-            SocketA = A;
+            SocketA = from;
             IsConnecting = true;
 
             Current = _connectionSpawner.Spawn();
@@ -95,7 +96,7 @@ namespace Main.Gameplay.Managers
 
             ActivateConnectorsExceptFor(SocketA.Root);
 
-            RaiseOnConnectionStarted(new ConnectionEventArgs(this, Current));
+            RaiseOnConnectionStarted(new ConnectionStartedEventArgs(this, Current));
         }
 
         #endregion
@@ -138,11 +139,13 @@ namespace Main.Gameplay.Managers
             }
 
             Current?.Disconnect();
-            RaiseOnConnectionEnded(new ConnectionEventArgs(this, Current));
+            RaiseOnConnectionEnded(new ConnectionEndedEventArgs(this, Current));
             Current = null;
         }
 
         #endregion
+
+        #region ActivateConnectors
 
         private void ActivateConnectorsExceptFor(Transform root) =>
             SetStateOfConnectorsExceptFor(root, PawnConnectorAnimator.ConnectorAnimatorState.ReadyToConnect);
@@ -173,10 +176,12 @@ namespace Main.Gameplay.Managers
             }
         }
 
+        #endregion
+
         #region Event Raisers
 
-        private void RaiseOnConnectionStarted(ConnectionEventArgs args) => onConnectionStarted?.Invoke(args);
-        private void RaiseOnConnectionEnded(ConnectionEventArgs args) => onConnectionEnded?.Invoke(args);
+        private void RaiseOnConnectionStarted(ConnectionStartedEventArgs args) => onConnectionStarted?.Invoke(args);
+        private void RaiseOnConnectionEnded(ConnectionEndedEventArgs args) => onConnectionEnded?.Invoke(args);
         private void RaiseOnConnectionEstablished(ConnectionEstablishedEventArgs args) => onConnectionEstablished?.Invoke(args);
 
         #endregion
@@ -278,7 +283,4 @@ namespace Main.Gameplay.Managers
 
         #endregion
     }
-
-    public record ConnectionEventArgs(ConnectionManager Manager, Connection Connection);
-    public record ConnectionEstablishedEventArgs(ConnectionManager Manager, Connection Connection);
 }

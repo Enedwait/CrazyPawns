@@ -1,7 +1,10 @@
 using Cysharp.Threading.Tasks;
 using Main.Common.Behaviours;
 using Main.Gameplay.Connectors;
-using Main.Gameplay.Managers;
+using Main.Gameplay.Managers.Connection;
+using Main.Gameplay.Managers.Drag;
+using Main.Gameplay.Managers.PanAndZoom;
+using Main.Gameplay.Managers.Selection;
 using Main.Gameplay.Targets;
 using UnityEngine;
 using UnityEngine.InputSystem;
