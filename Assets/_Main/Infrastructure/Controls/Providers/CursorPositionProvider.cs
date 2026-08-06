@@ -30,8 +30,10 @@ namespace Main.Infrastructure.Controls.Providers
         }
 #endif
 
-        protected void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+
             if (useScreenCenter)
                 initialCursorPosition = ScreenHelper.GetScreenCenter();
 

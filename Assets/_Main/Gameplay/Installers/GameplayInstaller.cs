@@ -2,6 +2,7 @@ using Main.Gameplay.Data;
 using Main.Gameplay.Pawns;
 using Main.Gameplay.Players;
 using Main.Gameplay.Connections;
+using Main.Gameplay.Connectors;
 using Main.Gameplay.Managers;
 using UnityEngine;
 using Zenject;
@@ -17,6 +18,7 @@ namespace Main.Gameplay.Installers
             InstallInstances();
             InstallPlayer();
             InstallPawns();
+            InstallConnectors();
             InstallConnections();
         }
 
@@ -58,16 +60,30 @@ namespace Main.Gameplay.Installers
                 .NonLazy();
         }
 
+        private void InstallConnectors()
+        {
+            Container.Bind<ConnectorRegistry>()
+                .FromInstance(new ConnectorRegistry(_sceneData.CrazyPawnSettings.InitialPawnCount * 5))
+                .AsSingle()
+                .NonLazy();
+        }
+
         private void InstallConnections()
         {
+            int initialConnectionCount = _sceneData.Settings.InitialConnectionCount;
+
             Container.Bind<ConnectionPoolSettings>()
-                .FromInstance(new ConnectionPoolSettings(_sceneData.InitialConnectionCount))
+                .FromInstance(new ConnectionPoolSettings(initialConnectionCount))
                 .AsSingle();
 
             Container.BindMemoryPool<Connection, ConnectionPool>()
-                .WithInitialSize(_sceneData.InitialConnectionCount)
+                .WithInitialSize(initialConnectionCount)
                 .FromComponentInNewPrefab(_sceneData.Prefabs.Connection)
                 .UnderTransformGroup("ConnectionPool");
+
+            Container.Bind<IActiveConnectionItems>()
+                .To<ConnectionPool>()
+                .FromResolve();
 
             Container.BindInterfacesAndSelfTo<ConnectionSpawner>()
                 .AsSingle()

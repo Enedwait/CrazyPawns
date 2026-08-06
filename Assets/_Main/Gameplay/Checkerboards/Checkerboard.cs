@@ -5,19 +5,22 @@ using UnityEngine;
 namespace Main.Gameplay.Checkerboards
 {
     [RequireComponent(typeof(MeshRenderer))]
-    public class Checkerboard : MonoBehaviour
+    public sealed class Checkerboard : MonoBehaviour
     {
-        private Renderer meshRenderer;
-        private Collider collider;
+        private MeshRenderer _renderer;
+        private Collider _collider;
 
         private void Awake()
         {
-            meshRenderer = GetComponent<MeshRenderer>();
-            collider = GetComponent<Collider>();
+            if (_renderer == null) _renderer = GetComponent<MeshRenderer>();
+            if (_collider == null) _collider = GetComponent<Collider>();
         }
 
         public async UniTask InitializeAsync(CheckerboardInitParameters parameters)
         {
+            // здесь мог бы быть истинно асинхронный метод, но есть такой без await - просто в качестве примера,
+            // потому что в рамках задачи и разработанного решения для других асинхронных методов места не нашлось :-(
+
             if (parameters.boardSize < 1)
                 parameters.boardSize = 1;
 
@@ -25,7 +28,7 @@ namespace Main.Gameplay.Checkerboards
 
             transform.localScale = new Vector3(finalSize, finalSize, 1);
 
-            Material checkerMaterial = meshRenderer.material;
+            Material checkerMaterial = _renderer.material;
 
             checkerMaterial.SetFloat("_CellCountPerRow", parameters.boardSize);
             checkerMaterial.SetFloat("_CellCountPerColumn", parameters.boardSize);
@@ -34,6 +37,6 @@ namespace Main.Gameplay.Checkerboards
         }
 
         public bool IsInside(Vector3 point) => 
-            collider.IsInside(point);
+            _collider.IsInside(point);
     }
 }

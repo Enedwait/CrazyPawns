@@ -1,6 +1,6 @@
 using Main.Common.Behaviours;
-using Main.Gameplay.Connections;
-using UnityEngine;
+using Main.Common.Interfaces;
+using Main.Gameplay.Connectors;
 using Zenject;
 
 namespace Main.Gameplay.Pawns
@@ -9,17 +9,23 @@ namespace Main.Gameplay.Pawns
     {
         #region Fields
 
+        private bool _isPooled = false;
+        private bool _isDespawned = false;
         private IMemoryPool _pool;
         private PawnDraggable _pawnDraggable;
+        private ConnectorRegistry _connectorRegistry;
 
         #endregion
 
         #region Inject
 
         [Inject]
-        private void Construct(PawnDraggable pawnDraggable)
+        private void Construct(
+            PawnDraggable pawnDraggable, 
+            ConnectorRegistry connectorRegistry)
         {
             this._pawnDraggable = pawnDraggable;
+            this._connectorRegistry = connectorRegistry;
         }
 
         #endregion
@@ -28,6 +34,8 @@ namespace Main.Gameplay.Pawns
 
         public void OnSpawned(IMemoryPool pool)
         {
+            _isPooled = true;
+            _isDespawned = false;
             _pool = pool;
             Subscribe(true);
         }
@@ -41,8 +49,20 @@ namespace Main.Gameplay.Pawns
 
         #endregion
 
+        #region ResetValues
+
         public void ResetValues()
-        { }
+        {
+            foreach (var connector in _connectorRegistry.Items)
+            {
+                if (connector == null) continue;
+                if (connector.Socket == null) continue;
+                if (!this.transform.Equals(connector.Root)) continue;
+                connector.Socket.DisconnectAll();
+            }
+        }
+
+        #endregion
 
         #region Subscribe
 
@@ -63,14 +83,15 @@ namespace Main.Gameplay.Pawns
 
         private void OnDragEndedOutside(PawnDragEndedOutsideEventArgs args)
         {
-            if (_pool != null)
+            if (_isPooled)
             {
-                _pool.Despawn(this);
+                if (!_isDespawned)
+                {
+                    _isDespawned = true;
+                    _pool.Despawn(this);
+                }
             }
-            else
-            {
-                Destroy(transform.gameObject);
-            }
+            else Destroy(gameObject);
         }
 
         #endregion

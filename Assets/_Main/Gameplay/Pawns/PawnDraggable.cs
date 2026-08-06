@@ -1,6 +1,8 @@
 using Main.Gameplay.Checkerboards;
+using Main.Gameplay.Data;
 using UnityEngine;
 using UnityEngine.Events;
+using Zenject;
 
 namespace Main.Common.Behaviours
 {
@@ -11,7 +13,15 @@ namespace Main.Common.Behaviours
         public UnityAction<PawnDragEndedOutsideEventArgs> onDragEndedOutside;
 
         private bool isInsideCheckerBoard;
-        private Checkerboard Checkerboard => sceneData.Checkerboard;
+        private SceneData _sceneData;
+
+        private Checkerboard Checkerboard => _sceneData.Checkerboard;
+
+        [Inject]
+        private void Construct(SceneData sceneData)
+        {
+            this._sceneData = sceneData;
+        }
 
         protected override bool BeginDragInner()
         {

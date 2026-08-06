@@ -20,14 +20,16 @@ namespace Main.Gameplay.Managers
         private Vector2DeltaProvider _cursorDeltaProvider;
         private CursorPositionProvider _cursorPositionProvider;
 
+        private bool isFirstClick = true;
         private RaycastHit[] _hits;
         private ICameraProvider _cameraProvider;
         private ConnectionSpawner _connectionSpawner;
         private Camera Camera => _cameraProvider.GetCamera();
-        
+
         public bool IsConnecting { get; private set; }
-        public ConnectorSocket SocketA { get; private set; }
-        public ConnectorSocket SocketB { get; private set; }
+        public bool IsMoving { get; private set; }
+        public IConnectorSocket SocketA { get; private set; }
+        public IConnectorSocket SocketB { get; private set; }
         public Connection Current { get; private set; }
 
         public event UnityAction<ConnectionEventArgs> onConnectionStarted;
@@ -44,7 +46,7 @@ namespace Main.Gameplay.Managers
             this._connectionSpawner = connectionSpawner;
             this._clickProvider = inputHandler.ClickProvider;
             this._cursorPositionProvider = inputHandler.CursorPositionProvider;
-            this._cursorDeltaProvider = inputHandler.CursorDeltaProvider;
+            this._cursorDeltaProvider = inputHandler.PanProvider;
         }
 
         protected override void Awake()
@@ -54,27 +56,28 @@ namespace Main.Gameplay.Managers
             _hits = new RaycastHit[_maxHitsCount];
         }
 
-        public void BeginConnect(ConnectorSocket A)
+        public void BeginConnect(IConnectorSocket A)
         {
             if (!IsActive || A == null)
                 return;
 
+            isFirstClick = true;
             SocketA = A;
             IsConnecting = true;
 
             Current = _connectionSpawner.Spawn();
-            Current.BeginDrag(SocketA.transform.position);
+            Current.BeginDrag(SocketA.Position);
 
             RaiseOnConnectionStarted(new ConnectionEventArgs(this, Current));
         }
 
         public void EndConnect()
         {
-            if (!IsActive || Current == null)
-            {
-                FinalizeEndConnect();
+            if (!IsActive || !IsConnecting)
                 return;
-            }
+
+            IsConnecting = false;
+            IsMoving = false;
 
             Vector2 screenPosition = _cursorPositionProvider.CursorPosition;
             Ray cameraRay = Camera.ScreenPointToRay(screenPosition);
@@ -87,13 +90,17 @@ namespace Main.Gameplay.Managers
                 ConnectorSocket socket = closestHit.collider.GetComponent<ConnectorSocket>();
                 if (socket != null)
                 {
-                    IsConnecting = false;
                     SocketB = socket;
-                    if (Current.Connect(SocketA, SocketB))
+
+                    if (Current.TryConnect(SocketA, SocketB, out ConnectionFailedReason failed))
                     {
                         RaiseOnConnectionEstablished(new ConnectionEventArgs(this, Current));
                         Current = null;
                         return;
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Не могу соединить: {failed.ToMessage()}");
                     }
                 }
             }
@@ -104,9 +111,11 @@ namespace Main.Gameplay.Managers
         private void FinalizeEndConnect()
         {
             IsConnecting = false;
+            IsMoving = false;
+
             if (Current != null)
             {
-                Current.Remove();
+                Current.Disconnect();
                 RaiseOnConnectionEnded(new ConnectionEventArgs(this, Current));
                 Current = null;
             }
@@ -126,7 +135,7 @@ namespace Main.Gameplay.Managers
 
         #endregion
 
-        #region SubscribeToClick
+        #region Click
 
         private void SubscribeToClick(bool subscribe)
         {
@@ -135,22 +144,30 @@ namespace Main.Gameplay.Managers
 
             if (subscribe)
             {
-                _clickProvider.onClickCanceled += OnClickCanceled;
+                _clickProvider.onClickCanceled += OnClick;
             }
             else
             {
-                _clickProvider.onClickCanceled -= OnClickCanceled;
+                _clickProvider.onClickCanceled -= OnClick;
             }
         }
 
-        private void OnClickCanceled()
+        private void OnClick()
         {
-            EndConnect();
+            if (IsMoving)
+            {
+                EndConnect();
+            }
+            else
+            {
+                if (isFirstClick) isFirstClick = false;
+                else EndConnect();
+            }
         }
 
         #endregion
 
-        #region SubscribeToCursorDelta
+        #region Connection Moving
 
         private void SubscribeToCursorDelta(bool subscribe)
         {
@@ -159,23 +176,35 @@ namespace Main.Gameplay.Managers
 
             if (subscribe)
             {
-                _cursorDeltaProvider.onDelta += OnCursorDelta;
+                _cursorDeltaProvider.onDelta += OnMoveDelta;
             }
             else
             {
-                _cursorDeltaProvider.onDelta -= OnCursorDelta;
+                _cursorDeltaProvider.onDelta -= OnMoveDelta;
             }
         }
 
-        private void OnCursorDelta(Vector2 delta)
+        private void OnMoveDelta(Vector2 delta)
+        {
+            MoveConnection(delta);
+        }
+
+        public void MoveConnection(Vector2 delta)
         {
             if (!IsActive || !IsConnecting)
                 return;
 
-            Vector3 start = SocketA.transform.position;
+            if (SocketA.IsNullAsComponent()) 
+            {
+                EndConnect();
+                return;
+            }
+
+            IsMoving = true;
+
+            Vector3 start = SocketA.Position;
             Vector3 end = start;
 
-            //Vector3 direction = Vector3.zero;
             Vector2 screenPosition = _cursorPositionProvider.CursorPosition;
             Ray cameraRay = Camera.ScreenPointToRay(screenPosition);
 
@@ -184,15 +213,10 @@ namespace Main.Gameplay.Managers
             {
                 RaycastHit closestHit = _hits.GetClosestHit(hitsCount);
                 end = closestHit.point;
-                //direction = closestHit.transform.position - start;
             }
             else
-            {
                 end = _cursorPositionProvider.GetWorldPositionWithY(Camera, 0f);
-                //direction = (worldPosition - start);
-            }
 
-            //Current.Drag(direction);
             Current.Drag(end);
         }
 

@@ -3,7 +3,7 @@ using UnityEngine.Events;
 
 namespace Main.Common.Behaviours
 {
-    public abstract class AbstractSelectable : AbstractMonoBehaviourExtended
+    public abstract class AbstractSelectable : AbstractMonoBehaviourExtended, ISelectable
     {
         [SerializeField] protected Transform target;
         
@@ -65,4 +65,14 @@ namespace Main.Common.Behaviours
     }
 
     public record SelectedChangedEventArgs(AbstractSelectable Selectable, bool IsSelected);
+
+
+    public interface ISelectable
+    {
+        event UnityAction<SelectedChangedEventArgs> onSelectedChanged;
+
+        bool IsSelected { get; }
+        bool Select();
+        bool Deselect();
+    }
 }

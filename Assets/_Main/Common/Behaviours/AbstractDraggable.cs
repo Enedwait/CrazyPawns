@@ -1,24 +1,17 @@
-using Main.Gameplay.Data;
 using UnityEngine;
-using Zenject;
 
 namespace Main.Common.Behaviours
 {
-    public abstract class AbstractDraggable : AbstractMonoBehaviourExtended
+    public abstract class AbstractDraggable : AbstractMonoBehaviourExtended, IDraggable
     {
         [SerializeField] protected Transform target;
-
-        protected SceneData sceneData;
 
         public Transform Target => target;
         public bool IsDragging { get; protected set; }
         public bool CanDrag { get; protected set; }
-
-        [Inject]
-        private void Construct(SceneData sceneData)
-        {
-            this.sceneData = sceneData;
-        }
+        public Vector3 Position => 
+            target != null ? target.position : 
+            transform != null ? transform.position : Vector3.zero;
 
         protected override void Start()
         {
@@ -29,16 +22,11 @@ namespace Main.Common.Behaviours
 
         public bool BeginDrag()
         {
-            if (!CanDrag && IsDragging)
-                return false;
+            if (!CanDrag && IsDragging) return false;
+            if (!BeginDragInner()) return false;
 
-            if (BeginDragInner())
-            {
-                IsDragging = true;
-                return true;
-            }
-
-            return false;
+            IsDragging = true;
+            return true;
         }
 
         protected abstract bool BeginDragInner();
@@ -55,16 +43,22 @@ namespace Main.Common.Behaviours
 
         public bool EndDrag()
         {
-            if (!IsDragging)
-                return true;
-
-            if (!EndDragInner())
-                return false;
+            if (!IsDragging) return true;
+            if (!EndDragInner()) return false;
             
             IsDragging = false;
             return true;
         }
 
         protected abstract bool EndDragInner();
+    }
+
+    public interface IDraggable
+    {
+        Vector3 Position { get; }
+
+        bool BeginDrag();
+        void Drag(Vector3 direction);
+        bool EndDrag();
     }
 }

@@ -13,11 +13,10 @@ namespace Main.Gameplay.Data
         [field: SerializeField] public PanAndZoomTarget MainPanAndZoomTarget { get; protected set; }
         [field: SerializeField] public Checkerboard Checkerboard { get; protected set; }
         [field: SerializeField, Header("Data")] public PrefabHolderSO Prefabs { get; protected set; }
-        [field: SerializeField] public CrazyPawnSettings CrazyPawnSettings { get; protected set; }
-        [field: SerializeField] public float CellSize { get; protected set; } = 1.5f;
+        [field: SerializeField] public CrazyPawnSettingsExtendedSO Settings { get; protected set; }
+        [field: SerializeField, Header("Debug Parameters")] public bool DoSpawnPawns { get; protected set; }
 
-        [field: SerializeField, Header("Parameters")] public bool DoSpawnPawns { get; protected set; }
-        [field: SerializeField] public int InitialConnectionCount { get; protected set; } = 64;
+        public CrazyPawnSettings CrazyPawnSettings => Settings.Original;
 
         public PawnSpawnerParameters GetPawnSpawnerParameters() => new PawnSpawnerParameters
         {
@@ -30,7 +29,7 @@ namespace Main.Gameplay.Data
         public CheckerboardInitParameters GetCheckerboardInitParameters() => new CheckerboardInitParameters
         {
             boardSize = CrazyPawnSettings.CheckerboardSize,
-            cellSize = CellSize,
+            cellSize = Settings.CellSize,
             WhiteCellColor = CrazyPawnSettings.WhiteCellColor,
             BlackCellColor = CrazyPawnSettings.BlackCellColor,
         };

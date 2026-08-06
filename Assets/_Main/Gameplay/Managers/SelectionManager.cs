@@ -22,7 +22,7 @@ namespace Main.Gameplay.Managers
         private CursorPositionProvider _cursorPositionProvider;
         private Camera Camera => _cameraProvider.GetCamera();
 
-        public AbstractSelectable Current { get; private set; }
+        public ISelectable Current { get; private set; }
 
         public event UnityAction<SelectedEventArgs> onSelected;
         public event UnityAction<SelectedEventArgs> onReleased;
@@ -56,6 +56,9 @@ namespace Main.Gameplay.Managers
 
         public bool Select(AbstractSelectable selectable)
         {
+            if (!IsActive)
+                return false;
+
             if (selectable == null)
                 return false;
 
@@ -72,8 +75,11 @@ namespace Main.Gameplay.Managers
             return true;
         }
 
-        public bool Deselect(AbstractSelectable selectable)
+        public bool Deselect(ISelectable selectable)
         {
+            if (!IsActive)
+                return false;
+
             if (selectable == null)
                 return true;
             
@@ -85,7 +91,7 @@ namespace Main.Gameplay.Managers
             return true;
         }
 
-        private void SubscribeToSelectable(AbstractSelectable selectable, bool subscribe)
+        private void SubscribeToSelectable(ISelectable selectable, bool subscribe)
         {
             if (selectable == null)
                 return;
@@ -117,9 +123,10 @@ namespace Main.Gameplay.Managers
 
         #region Event Raisers
 
-        private void RaiseOnSelected(AbstractSelectable selectable) => 
+        private void RaiseOnSelected(ISelectable selectable) => 
             onSelected?.Invoke(new SelectedEventArgs(this, selectable));
-        private void RaiseOnReleased(AbstractSelectable selectable) => 
+
+        private void RaiseOnReleased(ISelectable selectable) => 
             onReleased?.Invoke(new SelectedEventArgs(this, selectable));
 
         #endregion
@@ -172,5 +179,5 @@ namespace Main.Gameplay.Managers
         #endregion
     }
 
-    public record SelectedEventArgs(SelectionManager manager, AbstractSelectable selectable);
+    public record SelectedEventArgs(SelectionManager Manager, ISelectable Selectable);
 }

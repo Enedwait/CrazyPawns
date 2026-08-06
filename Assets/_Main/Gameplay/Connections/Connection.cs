@@ -1,20 +1,32 @@
+using System;
 using Main.Common.Behaviours;
+using Main.Common.Interfaces;
 using Main.Gameplay.Connectors;
 using UnityEngine;
-using UnityEngine.UIElements;
 using Zenject;
 
 namespace Main.Gameplay.Connections
 {
-    public class Connection : AbstractMonoBehaviourExtended, IPoolable<IMemoryPool>, IResetValues
+    public sealed class Connection : AbstractMonoBehaviourExtended, IPoolable<IMemoryPool>, IResetValues, IConnection
     {
         [SerializeField] private LineRenderer _lineRenderer;
         [SerializeField] private float _width = 0.07f;
 
+        private bool _isPooled = false;
+        private bool _isDespawned = false;
         private IMemoryPool _pool;
+        private IActiveConnectionItems _activeConnections;
 
-        public ConnectorSocket SocketA { get; protected set; }
-        public ConnectorSocket SocketB { get; protected set; }
+        public bool IsConnected { get; protected set; }
+        public IConnectorSocket SocketA { get; protected set; }
+        public IConnectorSocket SocketB { get; protected set; }
+
+        
+        [Inject]
+        private void Construct(IActiveConnectionItems activeConnections)
+        {
+            this._activeConnections = activeConnections;
+        }
 
 
 #if UNITY_EDITOR
@@ -68,39 +80,57 @@ namespace Main.Gameplay.Connections
 
         #region Connect
 
-        public virtual bool Connect(ConnectorSocket socketA, ConnectorSocket socketB)
+        public bool TryConnect(IConnectorSocket socketA, IConnectorSocket socketB, out ConnectionFailedReason failed)
         {
+            IsConnected = false;
+            failed = ConnectionFailedReason.None;
+
             if (socketA == null || socketB == null)
+            {
+                failed = ConnectionFailedReason.NoSocket;
                 return false;
+            }
 
             if (socketA.Root.Equals(socketB.Root))
+            {
+                failed = ConnectionFailedReason.SameRoot;
                 return false;
-
-            EndDrag(socketB.transform.position);
+            }
 
             SocketA = socketA;
             SocketB = socketB;
 
+            foreach (Connection other in _activeConnections.ActiveItems)
+            {
+                if (other == null) continue;
+                if (this.Equals(other)) continue;
+                if (!IsSame(other)) continue;
+
+                failed = ConnectionFailedReason.AlreadyExists;
+                return false;
+            }
+
+            SocketA.Connect(this);
+            SocketB.Connect(this);
+            
+            EndDrag(socketB.Position);
+            IsConnected = true;
             return true;
         }
 
         private void UpdateA()
         {
-            if (SocketA == null)
-                return;
-
-            _lineRenderer.SetPosition(0, SocketA.transform.position);
+            if (!IsConnected || SocketA == null) return;
+            _lineRenderer.SetPosition(0, SocketA.Position);
         }
 
         private void UpdateB()
         {
-            if (SocketB == null)
-                return;
-
-            _lineRenderer.SetPosition(1, SocketB.transform.position);
+            if (!IsConnected || SocketB == null) return;
+            _lineRenderer.SetPosition(1, SocketB.Position);
         }
 
-        public virtual void UpdatePoints()
+        public void UpdatePoints()
         {
             UpdateA();
             UpdateB();
@@ -108,28 +138,44 @@ namespace Main.Gameplay.Connections
 
         #endregion
 
+        #region Disconnect
+
+        public void Disconnect()
+        {
+            IsConnected = false;
+            if (SocketA != null) SocketA.Disconnect(this);
+            if (SocketB != null) SocketB.Disconnect(this);
+            Remove();
+        }
+
+        #endregion
+
         #region Spawn
 
-        public void Remove()
+        private void Remove()
         {
-            if (_pool != null)
+            if (_isPooled)
             {
-                _pool.Despawn(this);
+                if (!_isDespawned)
+                {
+                    _isDespawned = true;
+                    _pool.Despawn(this);
+                }
             }
-            else
-            {
-                Destroy(gameObject);
-            }
+            else Destroy(gameObject);
         }
 
         public void OnSpawned(IMemoryPool pool)
         {
+            _isPooled = true;
+            _isDespawned = false;
             _pool = pool;
             Subscribe(true);
         }
 
         public void OnDespawned()
         {
+            _isDespawned = true;
             _pool = null;
             Subscribe(false);
             ResetValues();
@@ -150,16 +196,40 @@ namespace Main.Gameplay.Connections
 
         #endregion
 
+        public bool HasBothSockets() => SocketA != null && SocketB != null;
+        public bool HasOneSocket() => (SocketA != null && SocketB == null) || (SocketA == null && SocketB != null);
+        public bool HasNoSockets() => SocketA == null && SocketB == null;
+        public IConnectorSocket GetAnySocket() => SocketA ?? SocketB;
+
+        public bool IsSame(Connection other)
+        {
+            if (other == null)
+                return false;
+
+            if (ReferenceEquals(this, other)) 
+                return true;
+
+            if (SocketA == null)
+            {
+                if (SocketB == null)
+                    return other.HasNoSockets();
+
+                return other.HasOneSocket() && SocketB.Equals(other.GetAnySocket());
+            }
+
+            if (SocketB == null)
+                return other.HasOneSocket() && SocketA.Equals(other.GetAnySocket());
+
+            return other.HasBothSockets() 
+                   && ((SocketA.Equals(other.SocketA) && SocketB.Equals(other.SocketB))
+                   || (SocketA.Equals(other.SocketB) && SocketB.Equals(other.SocketA)));
+        }
+
         #region Subscribe
 
         protected override void SubscribeInner(bool subscribe)
         { }
 
         #endregion
-    }
-
-    public interface IResetValues
-    {
-        void ResetValues();
     }
 }

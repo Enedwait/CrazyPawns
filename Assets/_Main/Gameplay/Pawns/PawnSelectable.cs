@@ -3,14 +3,14 @@ using Zenject;
 
 namespace Main.Gameplay.Pawns
 {
-    public sealed class PawnSelectable : AbstractSelectable
+    public sealed class PawnSelectable : AbstractSelectable, IPawnSelectable
     {
-        public PawnDraggable PawnDraggable { get; private set; }
+        public IDraggable Draggable { get; private set; }
 
         [Inject]
         private void Construct(PawnDraggable pawnDraggable)
         {
-            PawnDraggable = pawnDraggable;
+            Draggable = pawnDraggable;
         }
 
         protected override bool SelectInner()
@@ -25,5 +25,10 @@ namespace Main.Gameplay.Pawns
 
         protected override void SubscribeInner(bool subscribe)
         { }
+    }
+
+    public interface IPawnSelectable : ISelectable
+    {
+        IDraggable Draggable { get; }
     }
 }

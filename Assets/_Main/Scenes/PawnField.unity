@@ -389,11 +389,9 @@ MonoBehaviour:
   <Checkerboard>k__BackingField: {fileID: 162984741}
   <Prefabs>k__BackingField: {fileID: 11400000, guid: 412ccd3ea1c366048b19cbda8ce4e956,
     type: 2}
-  <CrazyPawnSettings>k__BackingField: {fileID: 11400000, guid: c3b00c709b1f94f22a212add39c80449,
+  <Settings>k__BackingField: {fileID: 11400000, guid: a1fddc500ec35774285415e6d4b11ee6,
     type: 2}
-  <CellSize>k__BackingField: 1.5
   <DoSpawnPawns>k__BackingField: 1
-  <InitialConnectionCount>k__BackingField: 64
 --- !u!4 &226194630
 Transform:
   m_ObjectHideFlags: 0
@@ -807,7 +805,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1219531501
 Transform:
   m_ObjectHideFlags: 0

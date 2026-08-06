@@ -1,4 +1,3 @@
-using Main.Common.Behaviours;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -15,8 +14,10 @@ namespace Main.Infrastructure.Controls.Providers
 
         public float Delta { get; private set; }
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+
             _deltaAction = _floatDeltaActionReference.action;
 
             ResetValues();

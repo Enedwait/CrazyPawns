@@ -4,11 +4,11 @@ using UnityEngine;
 namespace Main.Gameplay.Connectors
 {
     [DisallowMultipleComponent]
-    public class ConnectorSelectable : AbstractSelectable
+    public class ConnectorSelectable : AbstractSelectable, IConnectorSelectable
     {
         [SerializeField] private ConnectorSocket _socket;
 
-        public ConnectorSocket Socket => _socket;
+        public IConnectorSocket Socket => _socket;
 
         protected override void InitComponents()
         {
@@ -29,5 +29,10 @@ namespace Main.Gameplay.Connectors
 
         protected override void SubscribeInner(bool subscribe)
         { }
+    }
+
+    public interface IConnectorSelectable : ISelectable
+    {
+        IConnectorSocket Socket { get; }
     }
 }

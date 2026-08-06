@@ -15,8 +15,10 @@ namespace Main.Infrastructure.Controls.Providers
 
         public Vector2 Delta { get; private set; }
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+
             _deltaAction = _vector2DeltaActionReference.action;
 
             ResetValues();

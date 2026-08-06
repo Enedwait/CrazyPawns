@@ -1,4 +1,5 @@
 using Main.Common.Behaviours;
+using Main.Common.Extensions;
 using Main.Gameplay.Cameras;
 using Main.Gameplay.Players;
 using Main.Infrastructure.Controls.Providers;
@@ -18,7 +19,7 @@ namespace Main.Gameplay.Managers
         private Camera Camera => _cameraProvider.GetCamera();
         
         public bool IsDragging { get; private set; }
-        public AbstractDraggable Current { get; private set; }
+        public IDraggable Current { get; private set; }
 
         public event UnityAction<DragStartedEventArgs> onDragStarted;
         public event UnityAction<DragEndedEventArgs> onDragCompleted;
@@ -34,8 +35,11 @@ namespace Main.Gameplay.Managers
             this._cursorDeltaProvider = inputHandler.CursorDeltaProvider;
         }
 
-        public bool BeginDrag(AbstractDraggable draggable)
+        public bool BeginDrag(IDraggable draggable)
         {
+            if (!IsActive)
+                return false;
+
             if (draggable == null)
                 return false;
 
@@ -51,6 +55,9 @@ namespace Main.Gameplay.Managers
 
         public bool EndDrag()
         {
+            if (!IsActive)
+                return false;
+
             var draggable = Current;
             if (draggable == null)
                 return true;
@@ -67,10 +74,10 @@ namespace Main.Gameplay.Managers
 
         #region Event Raisers
 
-        private void RaiseOnDragStarted(AbstractDraggable draggable) => 
+        private void RaiseOnDragStarted(IDraggable draggable) => 
             onDragStarted?.Invoke(new DragStartedEventArgs(this, draggable));
 
-        private void RaiseOnDragCompleted(AbstractDraggable draggable) => 
+        private void RaiseOnDragCompleted(IDraggable draggable) => 
             onDragCompleted?.Invoke(new DragEndedEventArgs(this, draggable));
 
         #endregion
@@ -136,8 +143,14 @@ namespace Main.Gameplay.Managers
             if (!IsActive || !IsDragging)
                 return;
 
+            if (Current.IsNullAsComponent())
+            {
+                EndDrag();
+                return;
+            }
+
             Vector3 worldPosition = _cursorPositionProvider.GetWorldPositionWithY(Camera, 0f);
-            Vector3 direction = (worldPosition - Current.Target.position);
+            Vector3 direction = (worldPosition - Current.Position);
 
             Current.Drag(direction);
         }
@@ -145,6 +158,6 @@ namespace Main.Gameplay.Managers
         #endregion
     }
 
-    public record DragStartedEventArgs(DragManager DragManager, AbstractDraggable Draggable);
-    public record DragEndedEventArgs(DragManager DragManager, AbstractDraggable Draggable);
+    public record DragStartedEventArgs(DragManager DragManager, IDraggable Draggable);
+    public record DragEndedEventArgs(DragManager DragManager, IDraggable Draggable);
 }
