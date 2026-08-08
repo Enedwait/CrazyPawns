@@ -20,7 +20,7 @@ namespace Main.Gameplay.Players
                 .FromInstance(new CameraProvider(null))
                 .AsSingle();
 
-            Container.BindInterfacesAndSelfTo<PlayerInputHolder>()
+            Container.Bind<IPlayerInputHolder>()
                 .FromInstance(_inputHolder)
                 .AsSingle();
         }

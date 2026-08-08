@@ -4,14 +4,13 @@ namespace Main.Gameplay.Players
     {
         #region Fields
 
-        private PlayerFactory _playerFactory;
-        private Player _player;
+        private IPlayerFactory _playerFactory;
 
         #endregion
 
         #region Init
 
-        public PlayerSpawner(PlayerFactory playerFactory)
+        public PlayerSpawner(IPlayerFactory playerFactory)
         {
             this._playerFactory = playerFactory;
         }
@@ -20,7 +19,7 @@ namespace Main.Gameplay.Players
 
         #region Spawn
 
-        public Player Spawn() =>
+        public IPlayer Spawn() =>
             _playerFactory.Create();
 
         #endregion

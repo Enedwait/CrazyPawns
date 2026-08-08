@@ -49,8 +49,9 @@ namespace Main.Gameplay.Installers
 
         private void InstallPlayer()
         {
-            Container.BindFactory<Player, PlayerFactory>()
-                .FromComponentInNewPrefab(_sceneData.Prefabs.Player);
+            Container.BindFactoryCustomInterface<IPlayer, PlayerFactory, IPlayerFactory>()
+                .FromComponentInNewPrefab(_sceneData.Prefabs.Player)
+                .UnderTransformGroup("[ Players ]");
 
             Container.BindInterfacesAndSelfTo<PlayerSpawner>()
                 .AsSingle()
@@ -83,7 +84,7 @@ namespace Main.Gameplay.Installers
             Container.BindMemoryPool<Pawn, PawnPool>()
                 .WithInitialSize(parameters.pawnCount)
                 .FromComponentInNewPrefab(_sceneData.Prefabs.Pawn)
-                .UnderTransformGroup("PawnPool");
+                .UnderTransformGroup("[ PawnPool ]");
 
             Container.BindInterfacesAndSelfTo<PawnSpawner>()
                 .AsSingle()
@@ -122,7 +123,7 @@ namespace Main.Gameplay.Installers
             Container.BindMemoryPool<Connection, ConnectionPool>()
                 .WithInitialSize(initialConnectionCount)
                 .FromComponentInNewPrefab(_sceneData.Prefabs.Connection)
-                .UnderTransformGroup("ConnectionPool");
+                .UnderTransformGroup("[ ConnectionPool ]");
 
             Container.Bind<IActiveConnectionItems>()
                 .To<ConnectionPool>()

@@ -16,11 +16,11 @@ namespace Main.Gameplay.Pawns
 
         public override void InstallBindings()
         {
-            Container.BindInterfacesAndSelfTo<PawnDraggable>()
+            Container.Bind<IPawnDraggable>()
                 .FromInstance(_pawnDraggable)
                 .AsSingle();
 
-            Container.BindInterfacesAndSelfTo<PawnSelectable>()
+            Container.Bind<IPawnSelectable>()
                 .FromInstance(_pawnSelectable)
                 .AsSingle();
         }

@@ -109,6 +109,7 @@ namespace Main.Gameplay.Managers.Selection
         {
             SubscribeToSelectable(selectable, false);
             RaiseOnDeselected(selectable);
+            Current = null;
         }
 
         #endregion
@@ -120,14 +121,8 @@ namespace Main.Gameplay.Managers.Selection
             if (selectable == null)
                 return;
 
-            if (subscribe)
-            {
-                selectable.onSelectedChanged += OnSelectedChanged;
-            }
-            else
-            {
-                selectable.onSelectedChanged -= OnSelectedChanged;
-            }
+            if (subscribe) selectable.onSelectedChanged += OnSelectedChanged;
+            else selectable.onSelectedChanged -= OnSelectedChanged;
         }
 
         private void OnSelectedChanged(SelectedChangedEventArgs args)
@@ -160,14 +155,8 @@ namespace Main.Gameplay.Managers.Selection
             if (_clickProvider == null)
                 return;
 
-            if (subscribe)
-            {
-                _clickProvider.onClickPerformed += OnClick;
-            }
-            else
-            {
-                _clickProvider.onClickPerformed -= OnClick;
-            }
+            if (subscribe) _clickProvider.onClickPerformed += OnClick;
+            else _clickProvider.onClickPerformed -= OnClick;
         }
 
         private void OnClick()

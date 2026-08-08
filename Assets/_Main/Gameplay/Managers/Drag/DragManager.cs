@@ -40,6 +40,7 @@ namespace Main.Gameplay.Managers.Drag
         #region Events
 
         public event UnityAction<DragStartedEventArgs> onDragStarted;
+        public event UnityAction<DragAttemptedEventArgs> onDragAttempted;
         public event UnityAction<DragEndedEventArgs> onDragCompleted;
 
         #endregion
@@ -54,7 +55,7 @@ namespace Main.Gameplay.Managers.Drag
             this._cameraProvider = cameraProvider;
             this._clickProvider = inputHolder.ClickProvider;
             this._cursorPositionProvider = inputHolder.CursorPositionProvider;
-            this._cursorDeltaProvider = inputHolder.CursorDeltaProvider;
+            this._cursorDeltaProvider = inputHolder.PanProvider;
         }
 
         #endregion
@@ -121,6 +122,9 @@ namespace Main.Gameplay.Managers.Drag
         private void RaiseOnDragStarted(IDraggable draggable) => 
             onDragStarted?.Invoke(new DragStartedEventArgs(this, draggable));
 
+        private void RaiseOnDragAttemped() =>
+            onDragAttempted?.Invoke(new DragAttemptedEventArgs(this));
+
         private void RaiseOnDragCompleted(IDraggable draggable) => 
             onDragCompleted?.Invoke(new DragEndedEventArgs(this, draggable));
 
@@ -180,7 +184,10 @@ namespace Main.Gameplay.Managers.Drag
         private void OnCursorDelta(Vector2 delta)
         {
             if (!IsActive || !IsDragging)
+            {
+                RaiseOnDragAttemped();
                 return;
+            }
 
             if (Current.IsNullOrDestroyed())
             {

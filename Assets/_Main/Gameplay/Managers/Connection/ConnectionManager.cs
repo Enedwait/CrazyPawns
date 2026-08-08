@@ -85,7 +85,7 @@ namespace Main.Gameplay.Managers.Connection
 
         public void BeginConnect(IConnectorSocket from)
         {
-            if (!IsActive || from == null)
+            if (!IsActive || from.IsNullOrDestroyed())
                 return;
 
             isFirstClick = true;

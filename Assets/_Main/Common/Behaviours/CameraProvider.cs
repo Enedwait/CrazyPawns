@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Main.Common.Behaviours
 {
@@ -7,6 +8,12 @@ namespace Main.Common.Behaviours
         #region Fields
 
         private Camera _camera;
+
+        #endregion
+
+        #region Events
+
+        public event UnityAction<Camera> onCameraChanged;
 
         #endregion
 
@@ -23,13 +30,26 @@ namespace Main.Common.Behaviours
 
         public Camera GetCamera() => _camera;
 
-        public void SetCamera(Camera camera) => this._camera = camera;
+        public void SetCamera(Camera camera)
+        {
+            this._camera = camera;
+            RaiseOnCameraChanged();
+        }
+
+        #endregion
+
+        #region Event Raisers
+
+        private void RaiseOnCameraChanged() => 
+            onCameraChanged?.Invoke(_camera);
 
         #endregion
     }
 
     public interface ICameraProvider
     {
+        public event UnityAction<Camera> onCameraChanged;
+
         Camera GetCamera();
         void SetCamera(Camera camera);
     }

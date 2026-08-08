@@ -14,7 +14,7 @@ namespace Main.Gameplay.Pawns
         #region Inject
 
         [Inject]
-        private void Construct(PawnDraggable pawnDraggable)
+        private void Construct(IPawnDraggable pawnDraggable)
         {
             Draggable = pawnDraggable;
         }
@@ -42,6 +42,4 @@ namespace Main.Gameplay.Pawns
 
         #endregion
     }
-
-    
 }
