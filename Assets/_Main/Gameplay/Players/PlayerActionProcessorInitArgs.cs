@@ -1,6 +1,7 @@
-using Main.Gameplay.Targets;
+using Main.Gameplay.Managers.Pan;
+using Main.Gameplay.Managers.Zoom;
 
 namespace Main.Gameplay.Players
 {
-    public record PlayerActionProcessorInitArgs(PanAndZoomTarget PanAndZoomTarget);
+    public record PlayerActionProcessorInitArgs(IPanTarget PanTarget, IZoomTarget ZoomTarget);
 }

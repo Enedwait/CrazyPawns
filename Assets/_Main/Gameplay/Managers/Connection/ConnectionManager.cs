@@ -39,7 +39,7 @@ namespace Main.Gameplay.Managers.Connection
         public bool IsMoving { get; private set; }
         public IConnectorSocket SocketA { get; private set; }
         public IConnectorSocket SocketB { get; private set; }
-        public Connections.Connection Current { get; private set; }
+        public IConnection Current { get; private set; }
 
         #endregion
 
@@ -93,7 +93,7 @@ namespace Main.Gameplay.Managers.Connection
             IsConnecting = true;
 
             Current = _connectionSpawner.Spawn();
-            Current.BeginDrag(SocketA.Position);
+            Current.MoveStartAt(SocketA.Position);
 
             ActivateConnectorsExceptFor(SocketA.Root);
 
@@ -279,7 +279,7 @@ namespace Main.Gameplay.Managers.Connection
             else
                 end = _cursorPositionProvider.GetWorldPositionWithY(Camera, 0f);
 
-            Current.Drag(end);
+            Current.MoveEndAt(end);
         }
 
         #endregion

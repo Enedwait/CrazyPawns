@@ -3,8 +3,9 @@ using Main.Common.Behaviours;
 using Main.Gameplay.Connectors;
 using Main.Gameplay.Managers.Connection;
 using Main.Gameplay.Managers.Drag;
-using Main.Gameplay.Managers.PanAndZoom;
+using Main.Gameplay.Managers.Pan;
 using Main.Gameplay.Managers.Selection;
+using Main.Gameplay.Managers.Zoom;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Zenject;
@@ -17,7 +18,8 @@ namespace Main.Gameplay.Players
         #region Serialize Field
 
         [SerializeField] private SelectionManager _selectionManager;
-        [SerializeField] private PanAndZoomManager _panAndZoomManager;
+        [SerializeField] private PanManager _panManager;
+        [SerializeField] private ZoomManager _zoomManager;
         [SerializeField] private DragManager _dragManager;
         [SerializeField] private ConnectionManager _connectionManager;
 
@@ -49,7 +51,7 @@ namespace Main.Gameplay.Players
             this._inputHolder = inputHolder;
 
             _actionProcessor = new PlayerActionProcessor(new PlayerActionProcessorParameters(
-               _selectionManager, _panAndZoomManager, _dragManager, _connectionManager));
+               _selectionManager, _panManager, _zoomManager, _dragManager, _connectionManager));
         }
 
         #endregion
@@ -62,7 +64,7 @@ namespace Main.Gameplay.Players
             PlayerInput.camera = _cameraProvider.GetCamera();
 
             await _actionProcessor.InitializeAsync(new PlayerActionProcessorInitArgs(
-                args.PanAndZoomTarget));
+                args.PanTarget, args.ZoomTarget));
         }
 
         #endregion

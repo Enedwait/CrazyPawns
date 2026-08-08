@@ -1,21 +1,20 @@
 using Main.Common.Behaviours;
+using Main.Common.Extensions;
 using Main.Gameplay.Players;
-using Main.Gameplay.Targets;
 using Main.Infrastructure.Controls.Providers;
 using UnityEngine;
 using Zenject;
 
-namespace Main.Gameplay.Managers.PanAndZoom
+namespace Main.Gameplay.Managers.Zoom
 {
     [DisallowMultipleComponent]
-    public sealed class PanAndZoomManager : AbstractManager, IPanAndZoomManager
+    public sealed class ZoomManager : AbstractManager, IZoomManager
     {
         #region Fields
 
-        private PanAndZoomTarget _target;
+        private IZoomTarget _target;
         private ICursorPositionProvider _cursorPositionProvider;
         private IFloatDeltaProvider _zoomProvider;
-        private IVector2DeltaProvider _panProvider;
         private ICameraProvider _cameraProvider;
 
         #endregion
@@ -23,8 +22,6 @@ namespace Main.Gameplay.Managers.PanAndZoom
         #region Properties
 
         private Camera Camera => _cameraProvider.GetCamera();
-        public bool IsPanAllowed { get; private set; }
-        public bool IsZoomAllowed { get; private set; }
 
         #endregion
 
@@ -37,7 +34,6 @@ namespace Main.Gameplay.Managers.PanAndZoom
         {
             this._cameraProvider = cameraProvider;
             this._cursorPositionProvider = inputHolder.CursorPositionProvider;
-            this._panProvider = inputHolder.PanProvider;
             this._zoomProvider = inputHolder.ZoomProvider;
         }
 
@@ -45,7 +41,7 @@ namespace Main.Gameplay.Managers.PanAndZoom
 
         #region Methods
 
-        public void SetTarget(PanAndZoomTarget target)
+        public void SetTarget(IZoomTarget target)
         {
             this._target = target;
         }
@@ -57,7 +53,6 @@ namespace Main.Gameplay.Managers.PanAndZoom
         protected override void SubscribeInner(bool subscribe)
         {
             SubscribeToZoom(subscribe);
-            SubscribeToPan(subscribe);
         }
 
         #endregion
@@ -82,55 +77,12 @@ namespace Main.Gameplay.Managers.PanAndZoom
         private void OnZoomDelta(float zoom)
         {
             if (!IsActive) return;
-            if (!IsZoomAllowed) return;
-            if (_target == null) return;
+            if (_target.IsNullOrDestroyed()) return;
 
             Vector2 cursorScreenPosition = _cursorPositionProvider.CursorPosition;
             Ray cameraRay = Camera.ScreenPointToRay(cursorScreenPosition);
 
             _target.SetZoom(cameraRay.direction, zoom);
-        }
-
-        public void SetPanAllowed(bool allowed)
-        {
-            IsPanAllowed = allowed;
-            if (!IsPanAllowed)
-                _target?.SetPan(Vector2.zero);
-        }
-
-        #endregion
-
-        #region SubscribeToPan
-
-        private void SubscribeToPan(bool subscribe)
-        {
-            if (_panProvider == null)
-                return;
-
-            if (subscribe)
-            {
-                _panProvider.onDelta += OnPanDelta;
-            }
-            else
-            {
-                _panProvider.onDelta -= OnPanDelta;
-            }
-        }
-
-        private void OnPanDelta(Vector2 panDelta)
-        {
-            if (!IsActive) return;
-            if (!IsPanAllowed) return;
-            if (_target == null) return;
-
-            _target.SetPan(panDelta);
-        }
-
-        public void SetZoomAllowed(bool allowed)
-        {
-            IsZoomAllowed = allowed;
-            if (!IsZoomAllowed)
-                _target?.SetZoom(Vector3.zero, 0f);
         }
 
         #endregion

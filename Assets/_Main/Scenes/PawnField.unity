@@ -385,7 +385,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <MainCamera>k__BackingField: {fileID: 588456400}
-  <MainPanAndZoomTarget>k__BackingField: {fileID: 588456402}
+  <MainPanTarget>k__BackingField: {fileID: 588456402}
+  <MainZoomTarget>k__BackingField: {fileID: 588456403}
   <Checkerboard>k__BackingField: {fileID: 162984741}
   <ManualPawns>k__BackingField: {fileID: 1219531500}
   <Prefabs>k__BackingField: {fileID: 11400000, guid: 412ccd3ea1c366048b19cbda8ce4e956,
@@ -723,6 +724,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3c51219980e89a34a8099a309767bc3f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &588456403 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3250187607315689770, guid: eac2cf81bb7f55041b091eabcbbfaa91,
+    type: 3}
+  m_PrefabInstance: {fileID: 588456399}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d46123a6315e8414c9a1a31ae9ed4385, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &733922489

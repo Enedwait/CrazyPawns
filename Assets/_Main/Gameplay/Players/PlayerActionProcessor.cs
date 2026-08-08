@@ -6,8 +6,9 @@ using System;
 using Main.Common.Classes.Objects;
 using Main.Gameplay.Managers.Connection;
 using Main.Gameplay.Managers.Drag;
-using Main.Gameplay.Managers.PanAndZoom;
+using Main.Gameplay.Managers.Pan;
 using Main.Gameplay.Managers.Selection;
+using Main.Gameplay.Managers.Zoom;
 
 namespace Main.Gameplay.Players
 {
@@ -16,7 +17,8 @@ namespace Main.Gameplay.Players
         #region Fields
 
         private ISelectionManager _selectionManager;
-        private IPanAndZoomManager _panAndZoomManager;
+        private IPanManager _panManager;
+        private IZoomManager _zoomManager;
         private IDragManager _dragManager;
         private IConnectionManager _connectionManager;
 
@@ -27,21 +29,21 @@ namespace Main.Gameplay.Players
         public PlayerActionProcessor(PlayerActionProcessorParameters parameters)
         {
             this._selectionManager = parameters.SelectionManager;
-            this._panAndZoomManager = parameters.PanAndZoomManager;
+            this._panManager = parameters.PanManager;
+            this._zoomManager = parameters.ZoomManager;
             this._dragManager = parameters.DragManager;
             this._connectionManager = parameters.ConnectionManager;
         }
 
         public async UniTask InitializeAsync(PlayerActionProcessorInitArgs args)
         {
-            // предполагается, что IRL будет асинхронно - ради примера
-
             _selectionManager.SetActive(true);
 
-            _panAndZoomManager.SetActive(true);
-            _panAndZoomManager.SetPanAllowed(true);
-            _panAndZoomManager.SetZoomAllowed(true);
-            _panAndZoomManager.SetTarget(args.PanAndZoomTarget);
+            _panManager.SetActive(true);
+            _panManager.SetTarget(args.PanTarget);
+
+            _zoomManager.SetActive(true);
+            _zoomManager.SetTarget(args.ZoomTarget);
 
             _dragManager.SetActive(false);
 
@@ -141,7 +143,7 @@ namespace Main.Gameplay.Players
         private void OnDragStarted(DragStartedEventArgs args)
         {
             _selectionManager.SetActive(false);
-            _panAndZoomManager.SetPanAllowed(false);
+            _panManager.SetActive(false);
         }
 
         private void OnDragCompleted(DragEndedEventArgs args)
@@ -150,7 +152,7 @@ namespace Main.Gameplay.Players
             _dragManager.SetActive(false);
 
             _selectionManager.SetActive(true);
-            _panAndZoomManager.SetPanAllowed(true);
+            _panManager.SetActive(true);
         }
 
         #endregion
@@ -178,21 +180,21 @@ namespace Main.Gameplay.Players
 
         private void OnConnectionStarted(ConnectionStartedEventArgs args)
         {
-            _panAndZoomManager.SetPanAllowed(false);
+            _panManager.SetActive(false);
             _selectionManager.SetActive(false);
         }
 
         private void OnConnectionEnded(ConnectionEndedEventArgs args)
         {
             _connectionManager.SetActive(false);
-            _panAndZoomManager.SetPanAllowed(true);
+            _panManager.SetActive(true);
             _selectionManager.SetActive(true);
         }
 
         private void OnConnectionEstablished(ConnectionEstablishedEventArgs args)
         {
             _connectionManager.SetActive(false);
-            _panAndZoomManager.SetPanAllowed(true);
+            _panManager.SetActive(true);
             _selectionManager.SetActive(true);
         }
 

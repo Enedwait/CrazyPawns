@@ -1,8 +1,6 @@
-using System;
 using Main.Common.Behaviours;
 using Main.Common.Interfaces;
 using Main.Gameplay.Connectors;
-using Main.Gameplay.Data;
 using UnityEngine;
 using Zenject;
 
@@ -19,7 +17,7 @@ namespace Main.Gameplay.Connections
         private bool _isDespawned = false;
         private IMemoryPool _pool;
         private IActiveConnectionItems _activeConnections;
-        private SceneData _sceneData;
+        private IConnectionSettingsProvider _connectionSettingsProvider;
 
         #endregion
 
@@ -35,10 +33,10 @@ namespace Main.Gameplay.Connections
 
         [Inject]
         private void Construct(
-            SceneData sceneData,
+            IConnectionSettingsProvider connectionSettingsProvider,
             IActiveConnectionItems activeConnections)
         {
-            this._sceneData = sceneData;
+            this._connectionSettingsProvider = connectionSettingsProvider;
             this._activeConnections = activeConnections;
         }
 
@@ -59,9 +57,8 @@ namespace Main.Gameplay.Connections
         protected override void Awake()
         {
             base.Awake();
-
-            if (_sceneData != null)
-                _width = _sceneData.Settings.ConnectionWidth;
+            
+            _width = _connectionSettingsProvider.GetSettings().connectionWidth;
             
             _lineRenderer.useWorldSpace = true;
             SetWidth(_width);
@@ -85,18 +82,13 @@ namespace Main.Gameplay.Connections
 
         #region Drag
 
-        public void BeginDrag(Vector3 start)
+        public void MoveStartAt(Vector3 start)
         {
             _lineRenderer.SetPosition(0, start);
             _lineRenderer.SetPosition(1, start);
         }
 
-        public void Drag(Vector3 position)
-        {
-            _lineRenderer.SetPosition(1, position);
-        }
-
-        public void EndDrag(Vector3 end)
+        public void MoveEndAt(Vector3 end)
         {
             _lineRenderer.SetPosition(1, end);
         }
@@ -138,7 +130,7 @@ namespace Main.Gameplay.Connections
             SocketA.Connect(this);
             SocketB.Connect(this);
             
-            EndDrag(socketB.Position);
+            MoveEndAt(socketB.Position);
             IsConnected = true;
             return true;
         }

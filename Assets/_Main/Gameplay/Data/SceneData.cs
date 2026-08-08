@@ -1,9 +1,11 @@
 using System;
 using CrazyPawn;
 using Main.Gameplay.Checkerboards;
+using Main.Gameplay.Connections;
+using Main.Gameplay.Managers.Pan;
+using Main.Gameplay.Managers.Zoom;
 using Main.Gameplay.Pawns;
 using Main.Gameplay.Players;
-using Main.Gameplay.Targets;
 using UnityEngine;
 
 namespace Main.Gameplay.Data
@@ -13,7 +15,8 @@ namespace Main.Gameplay.Data
         #region Properties
 
         [field: SerializeField, Header("Scene Objects")] public Camera MainCamera { get; private set; }
-        [field: SerializeField] public PanAndZoomTarget MainPanAndZoomTarget { get; private set; }
+        [field: SerializeField] public PanTarget MainPanTarget { get; private set; }
+        [field: SerializeField] public ZoomTarget MainZoomTarget { get; private set; }
         [field: SerializeField] public Checkerboard Checkerboard { get; private set; }
         [field: SerializeField] public GameObject ManualPawns { get; private set; }
         [field: SerializeField, Header("Data")] public PrefabHolderSO Prefabs { get; private set; }
@@ -50,7 +53,12 @@ namespace Main.Gameplay.Data
             CrazyPawnSettings.BlackCellColor);
 
         public PlayerInitArgs GetPlayerInitArgs() =>
-            new PlayerInitArgs(MainCamera, MainPanAndZoomTarget);
+            new PlayerInitArgs(MainCamera, MainPanTarget, MainZoomTarget);
+
+        public ConnectionSettings GetConnectionSettings() => new ConnectionSettings
+        {
+            connectionWidth = Settings.ConnectionWidth,
+        };
 
         #endregion
     }

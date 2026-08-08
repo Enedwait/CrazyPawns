@@ -111,6 +111,10 @@ namespace Main.Gameplay.Installers
         {
             int initialConnectionCount = _sceneData.Settings.InitialConnectionCount;
 
+            Container.Bind<IConnectionSettingsProvider>()
+                .FromInstance(new ConnectionSettingsProvider(_sceneData.GetConnectionSettings()))
+                .AsSingle();
+
             Container.Bind<ConnectionPoolSettings>()
                 .FromInstance(new ConnectionPoolSettings(initialConnectionCount))
                 .AsSingle();
