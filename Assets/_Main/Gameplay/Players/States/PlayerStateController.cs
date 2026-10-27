@@ -45,6 +45,4 @@ namespace Main.Gameplay.Players.States
 
         #endregion
     }
-
-    
 }
